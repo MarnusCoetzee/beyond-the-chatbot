@@ -10,10 +10,6 @@
       <app-question-input />
     </div>
   } @else {
-    <div class="deliberation-view-placeholder">
-      <!-- DeliberationView component will replace this in Task 15 -->
-      <p class="mono">Session active: {{ sessionState.currentSession.id }}</p>
-      <p>Status: {{ sessionState.currentSession.status }}</p>
-    </div>
+    <app-deliberation-view />
   }
 </main>

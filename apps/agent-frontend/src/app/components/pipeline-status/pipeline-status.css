@@ -1,0 +1,79 @@
+.pipeline-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stage-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.stage-step.active {
+  background: rgba(76, 201, 240, 0.08);
+}
+
+.step-indicator {
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.3s;
+}
+
+.dot.pulse {
+  background: var(--accent-active);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.check {
+  color: var(--accent-success);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.stage-step.complete .dot {
+  background: var(--accent-success);
+}
+
+.step-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.step-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.stage-step.active .step-label {
+  color: var(--accent-active);
+  font-weight: 500;
+}
+
+.stage-step.complete .step-label {
+  color: var(--accent-success);
+}
+
+.step-duration {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
