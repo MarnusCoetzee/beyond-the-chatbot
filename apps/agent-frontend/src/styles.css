@@ -1,1 +1,139 @@
-/* You can add global styles to this file, and also import other style files */
+/* === Consensus Lab Design Tokens === */
+:root {
+  /* Palette */
+  --bg-deep: #060816;
+  --surface-1: #0b1220;
+  --surface-2: #101a2b;
+  --glass: rgba(17, 25, 40, 0.72);
+  --border: rgba(130, 170, 255, 0.14);
+  --text-primary: #e8f0ff;
+  --text-secondary: #9eb0d0;
+  --text-muted: #6f7f9e;
+
+  /* Semantic accents */
+  --accent-active: #4cc9f0;
+  --accent-judge: #9b5cff;
+  --accent-success: #36d399;
+  --accent-warning: #ffb84d;
+  --accent-error: #ff6b81;
+
+  /* Agent accents */
+  --agent-pragmatist: #4c8cf0;
+  --agent-performance: #36d399;
+  --agent-dx: #ffb84d;
+  --agent-skeptic: #f06c8c;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  /* Radii */
+  --radius-panel: 24px;
+  --radius-card: 18px;
+  --radius-chip: 999px;
+
+  /* Typography */
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* === Global Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Ambient Background === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(76, 201, 240, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(155, 92, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(54, 211, 153, 0.02) 0%, transparent 50%);
+}
+
+/* === Faint Grid === */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(130, 170, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130, 170, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* === Glass Panel Mixin (applied via class) === */
+.glass-panel {
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
+}
+
+/* === Typography Utilities === */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(130, 170, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(130, 170, 255, 0.25);
+}
