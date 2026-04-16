@@ -12,6 +12,7 @@
     "strict": true,
     "target": "es2022",
     "customConditions": ["honours-demo"],
+    "baseUrl": ".",
     "paths": {
       "@consensus-lab/shared-types": ["packages/shared-types/src/index.ts"]
     }
