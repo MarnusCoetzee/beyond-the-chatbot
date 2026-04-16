@@ -10,5 +10,11 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts", "src/**/*.spec.js"],
+  "references": [
+    {
+      "path": "../../packages/shared-types/tsconfig.lib.json"
+    }
+  ]
 }
