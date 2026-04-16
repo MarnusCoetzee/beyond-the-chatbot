@@ -1,0 +1,49 @@
+<div class="graph-container glass-panel">
+  <div class="graph-header">
+    <h3 class="label">Pipeline Flow</h3>
+  </div>
+  <ngx-graph
+    [nodes]="nodes"
+    [links]="links"
+    [autoZoom]="true"
+    [autoCenter]="true"
+    layout="dagre"
+    [layoutSettings]="{ orientation: 'LR', rankPadding: 60, nodePadding: 30 }"
+  >
+    <ng-template #defsTemplate>
+      <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0"
+        markerWidth="6" markerHeight="6" orient="auto">
+        <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+      </svg:marker>
+    </ng-template>
+
+    <ng-template #nodeTemplate let-node>
+      <svg:g [attr.class]="'node-group ' + getNodeClass(node.id)">
+        <svg:rect
+          [attr.width]="node.dimension?.width"
+          [attr.height]="node.dimension?.height"
+          rx="12"
+          ry="12"
+          class="node-rect"
+        />
+        <svg:text
+          [attr.x]="(node.dimension?.width || 0) / 2"
+          [attr.y]="(node.dimension?.height || 0) / 2"
+          text-anchor="middle"
+          dominant-baseline="central"
+          class="node-label"
+        >{{ node.label }}</svg:text>
+      </svg:g>
+    </ng-template>
+
+    <ng-template #linkTemplate let-link>
+      <svg:g [attr.class]="getEdgeClass(link)">
+        <svg:path
+          [attr.d]="link.line"
+          class="edge-line"
+          marker-end="url(#arrow)"
+        />
+      </svg:g>
+    </ng-template>
+  </ngx-graph>
+</div>

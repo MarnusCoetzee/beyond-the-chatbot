@@ -1,0 +1,85 @@
+.graph-container {
+  padding: var(--space-4);
+  height: 220px;
+  overflow: hidden;
+}
+
+.graph-header {
+  margin-bottom: var(--space-2);
+}
+
+ngx-graph {
+  display: block;
+  height: 170px;
+}
+
+/* Node styles */
+.node-rect {
+  fill: var(--surface-2);
+  stroke: var(--border);
+  stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s;
+}
+
+.node-label {
+  fill: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  transition: fill 0.3s;
+}
+
+/* Active node */
+.node-group.active .node-rect {
+  stroke: var(--accent-active);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px rgba(76, 201, 240, 0.3));
+}
+
+.node-group.active .node-label {
+  fill: var(--accent-active);
+}
+
+/* Complete node */
+.node-group.complete .node-rect {
+  stroke: var(--accent-success);
+}
+
+.node-group.complete .node-label {
+  fill: var(--accent-success);
+}
+
+/* Error node */
+.node-group.error .node-rect {
+  stroke: var(--accent-error);
+}
+
+.node-group.error .node-label {
+  fill: var(--accent-error);
+}
+
+/* Edge styles */
+.edge-line {
+  stroke: var(--border);
+  stroke-width: 1.5;
+  fill: none;
+  transition: stroke 0.3s;
+}
+
+.active-edge .edge-line {
+  stroke: var(--accent-active);
+  stroke-width: 2;
+  stroke-dasharray: 8 4;
+  animation: edge-flow 1s linear infinite;
+}
+
+.complete-edge .edge-line {
+  stroke: var(--accent-success);
+}
+
+.arrow-head {
+  fill: var(--border);
+}
+
+@keyframes edge-flow {
+  to { stroke-dashoffset: -12; }
+}

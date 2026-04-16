@@ -7,11 +7,12 @@ import { TelemetryStripComponent } from '../telemetry-strip/telemetry-strip';
 import { ResearchPacketPanelComponent } from '../research-packet-panel/research-packet-panel';
 import { AgentCardComponent } from '../agent-card/agent-card';
 import { JudgePanelComponent } from '../judge-panel/judge-panel';
+import { PipelineGraphComponent } from '../pipeline-graph/pipeline-graph';
 
 @Component({
   selector: 'app-deliberation-view',
   standalone: true,
-  imports: [CommonModule, PipelineStatusComponent, TelemetryStripComponent, ResearchPacketPanelComponent, AgentCardComponent, JudgePanelComponent],
+  imports: [CommonModule, PipelineStatusComponent, TelemetryStripComponent, ResearchPacketPanelComponent, AgentCardComponent, JudgePanelComponent, PipelineGraphComponent],
   templateUrl: './deliberation-view.html',
   styleUrl: './deliberation-view.css',
 })

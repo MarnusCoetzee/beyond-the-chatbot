@@ -57,6 +57,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@angular/animations": "~21.2.0",
     "@angular/cdk": "^21.2.6",
     "@angular/common": "~21.2.0",
     "@angular/compiler": "~21.2.0",
