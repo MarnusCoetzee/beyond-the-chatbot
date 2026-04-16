@@ -1,12 +1,16 @@
 import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus, ConflictException, NotFoundException } from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
+import { OrchestrationService } from '../orchestration/orchestration.service';
 import { v4 as uuidv4 } from 'uuid';
 import type { Session, CreateSessionResponse, SessionListItem } from '@consensus-lab/shared-types';
 
 @Controller('sessions')
 export class SessionController {
-  constructor(private readonly sessionRepo: SessionRepository) {}
+  constructor(
+    private readonly sessionRepo: SessionRepository,
+    private readonly orchestration: OrchestrationService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -25,6 +29,8 @@ export class SessionController {
       createdAt: now,
     };
     this.sessionRepo.create(session);
+    // Fire and forget — orchestration runs in the background
+    this.orchestration.run(session.id, dto.llmConfig, dto.searchConfig);
     return { sessionId: session.id, status: session.status, createdAt: now };
   }
 
@@ -47,6 +53,7 @@ export class SessionController {
     if (['COMPLETE', 'ERROR', 'CANCELLED'].includes(session.status)) {
       throw new ConflictException(`Session is already in terminal state: ${session.status}`);
     }
+    this.orchestration.cancelSession(id);
     this.sessionRepo.updateStatus(id, 'CANCELLED');
     return { status: 'CANCELLED' };
   }
