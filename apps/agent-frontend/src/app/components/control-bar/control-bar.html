@@ -4,6 +4,9 @@
     <span class="status-chip" [class]="statusClass">{{ statusLabel }}</span>
   </div>
   <div class="bar-right">
+    <button class="icon-btn" (click)="toggleHistory()" title="History">
+      ☰
+    </button>
     <button class="icon-btn" (click)="toggleSettings()" title="Settings">
       ⚙
     </button>
@@ -12,4 +15,8 @@
 
 @if (showSettings) {
   <app-settings-dialog (close)="showSettings = false" />
+}
+
+@if (showHistory) {
+  <app-session-history (close)="showHistory = false" />
 }

@@ -1,0 +1,32 @@
+<div class="overlay" (click)="close.emit()"></div>
+<div class="history-panel glass-panel">
+  <div class="panel-header">
+    <h2>Session History</h2>
+    <button class="close-btn" (click)="close.emit()">✕</button>
+  </div>
+
+  @if (loading) {
+    <div class="loading">
+      <p class="mono">Loading sessions...</p>
+    </div>
+  } @else if (sessions.length === 0) {
+    <div class="empty">
+      <p class="mono">No sessions yet</p>
+    </div>
+  } @else {
+    <div class="session-list">
+      @for (session of sessions; track session.id) {
+        <button class="session-item" (click)="loadSession(session.id)">
+          <div class="item-top">
+            <span class="status-dot" [class]="getStatusClass(session.status)"></span>
+            <span class="question-text">{{ truncate(session.question, 60) }}</span>
+          </div>
+          <div class="item-meta mono">
+            <span>{{ session.status }}</span>
+            <span>{{ formatDuration(session.durationMs) }}</span>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</div>

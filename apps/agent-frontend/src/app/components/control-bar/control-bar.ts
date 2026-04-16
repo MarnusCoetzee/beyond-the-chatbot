@@ -2,17 +2,19 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SessionStateService } from '../../services/session-state.service';
 import { SettingsDialogComponent } from '../settings-dialog/settings-dialog';
+import { SessionHistoryComponent } from '../session-history/session-history';
 
 @Component({
   selector: 'app-control-bar',
   standalone: true,
-  imports: [CommonModule, SettingsDialogComponent],
+  imports: [CommonModule, SettingsDialogComponent, SessionHistoryComponent],
   templateUrl: './control-bar.html',
   styleUrl: './control-bar.css',
 })
 export class ControlBarComponent {
   readonly sessionState = inject(SessionStateService);
   showSettings = false;
+  showHistory = false;
 
   get statusLabel(): string {
     const session = this.sessionState.currentSession;
@@ -30,6 +32,10 @@ export class ControlBarComponent {
 
   toggleSettings(): void {
     this.showSettings = !this.showSettings;
+  }
+
+  toggleHistory(): void {
+    this.showHistory = !this.showHistory;
   }
 
   newSession(): void {
