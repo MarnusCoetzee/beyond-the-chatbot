@@ -10,7 +10,7 @@
 ## Generate a library
 
 ```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@honours-demo/pkg1
 ```
 
 ## Run tasks

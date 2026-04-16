@@ -1,0 +1,9 @@
+{
+  "name": "agent-frontend-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/agent-frontend-e2e/src",
+  "implicitDependencies": ["agent-frontend"],
+  "// targets": "to see all targets run: nx show project agent-frontend-e2e --web",
+  "targets": {}
+}
