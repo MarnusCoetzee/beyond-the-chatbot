@@ -11,6 +11,9 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["honours-demo"]
+    "customConditions": ["honours-demo"],
+    "paths": {
+      "@consensus-lab/shared-types": ["packages/shared-types/src/index.ts"]
+    }
   }
 }
