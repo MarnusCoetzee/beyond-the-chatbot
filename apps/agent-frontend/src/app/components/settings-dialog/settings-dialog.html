@@ -1,0 +1,52 @@
+<div class="overlay" (click)="close.emit()"></div>
+<div class="dialog glass-panel">
+  <div class="dialog-header">
+    <h2>Settings</h2>
+    <button class="close-btn" (click)="close.emit()">✕</button>
+  </div>
+
+  <div class="dialog-body">
+    <section class="section">
+      <h3 class="label">LLM Provider</h3>
+      <div class="field">
+        <label class="field-label">Base URL</label>
+        <input type="text" [(ngModel)]="baseUrl" placeholder="https://integrate.api.nvidia.com/v1" />
+      </div>
+      <div class="field">
+        <label class="field-label">API Key</label>
+        <input type="password" [(ngModel)]="apiKey" placeholder="Your API key" />
+      </div>
+      <div class="field">
+        <label class="field-label">Model</label>
+        <input type="text" [(ngModel)]="model" placeholder="meta/llama-3.1-8b-instruct" />
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="label">Web Search (Optional)</h3>
+      <div class="field toggle-field">
+        <label>
+          <input type="checkbox" [(ngModel)]="searchEnabled" />
+          Enable web search for research
+        </label>
+      </div>
+      @if (searchEnabled) {
+        <div class="field">
+          <label class="field-label">Provider</label>
+          <select [(ngModel)]="searchProvider">
+            <option value="brave">Brave Search</option>
+            <option value="firecrawl">Firecrawl</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Search API Key</label>
+          <input type="password" [(ngModel)]="searchApiKey" placeholder="Search provider API key" />
+        </div>
+      }
+    </section>
+  </div>
+
+  <div class="dialog-footer">
+    <button class="save-btn" (click)="save()">Save</button>
+  </div>
+</div>

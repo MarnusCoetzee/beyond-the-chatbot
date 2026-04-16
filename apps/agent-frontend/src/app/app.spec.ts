@@ -1,20 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { App } from './app';
-import { NxWelcome } from './nx-welcome';
+import { AppComponent } from './app';
+import { provideHttpClient } from '@angular/common/http';
 
-describe('App', () => {
+describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, NxWelcome],
+      imports: [AppComponent],
+      providers: [provideHttpClient()],
     }).compileComponents();
   });
 
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome agent-frontend',
-    );
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
   });
 });

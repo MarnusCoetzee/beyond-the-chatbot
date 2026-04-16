@@ -1,0 +1,15 @@
+<header class="control-bar glass-panel">
+  <div class="bar-left">
+    <span class="brand" (click)="newSession()">Consensus Lab</span>
+    <span class="status-chip" [class]="statusClass">{{ statusLabel }}</span>
+  </div>
+  <div class="bar-right">
+    <button class="icon-btn" (click)="toggleSettings()" title="Settings">
+      ⚙
+    </button>
+  </div>
+</header>
+
+@if (showSettings) {
+  <app-settings-dialog (close)="showSettings = false" />
+}

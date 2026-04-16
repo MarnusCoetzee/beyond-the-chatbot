@@ -1,2 +1,19 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<app-control-bar />
+
+<main class="app-main">
+  @if (!sessionState.currentSession) {
+    <div class="landing-view">
+      <div class="landing-hero">
+        <h1 class="landing-title">Consensus Lab</h1>
+        <p class="landing-subtitle">Multi-agent AI deliberation for engineering decisions</p>
+      </div>
+      <app-question-input />
+    </div>
+  } @else {
+    <div class="deliberation-view-placeholder">
+      <!-- DeliberationView component will replace this in Task 15 -->
+      <p class="mono">Session active: {{ sessionState.currentSession.id }}</p>
+      <p>Status: {{ sessionState.currentSession.status }}</p>
+    </div>
+  }
+</main>

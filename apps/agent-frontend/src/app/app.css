@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-main {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-6);
+}
+
+.landing-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  gap: var(--space-7);
+}
+
+.landing-hero {
+  text-align: center;
+}
+
+.landing-title {
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-active), var(--accent-judge));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-3);
+}
+
+.landing-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.15rem;
+}
+
+.deliberation-view-placeholder {
+  padding: var(--space-6);
+  color: var(--text-secondary);
+}

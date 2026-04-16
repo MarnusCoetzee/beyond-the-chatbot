@@ -1,0 +1,82 @@
+.control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-6);
+  border-radius: 0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  z-index: 100;
+}
+
+.bar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.bar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.status-chip {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--border);
+}
+
+.status-chip.idle {
+  color: var(--text-muted);
+}
+
+.status-chip.active {
+  color: var(--accent-active);
+  border-color: var(--accent-active);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-chip.complete {
+  color: var(--accent-success);
+  border-color: var(--accent-success);
+}
+
+.status-chip.error {
+  color: var(--accent-error);
+  border-color: var(--accent-error);
+}
+
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent-active);
+  color: var(--text-primary);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ControlBarComponent } from './components/control-bar/control-bar';
+import { QuestionInputComponent } from './components/question-input/question-input';
+import { SessionStateService } from './services/session-state.service';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, ControlBarComponent, QuestionInputComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  protected title = 'agent-frontend';
+export class AppComponent {
+  readonly sessionState = inject(SessionStateService);
 }
