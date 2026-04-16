@@ -1,0 +1,12 @@
+<div class="claim-card card">
+  <div class="claim-meta">
+    <span class="option-badge">{{ claim.option }}</span>
+    <span class="criterion mono">{{ claim.criterion }}</span>
+    <div class="strength-bars">
+      @for (active of strengthBars; track $index) {
+        <span class="bar" [class.active]="active"></span>
+      }
+    </div>
+  </div>
+  <p class="claim-text">{{ claim.claim }}</p>
+</div>

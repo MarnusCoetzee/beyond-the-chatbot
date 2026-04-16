@@ -1,0 +1,65 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.shimmer-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-active), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.status-text {
+  color: var(--accent-active);
+  text-align: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.source-list, .claim-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gaps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gaps-list li {
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding-left: var(--space-4);
+  position: relative;
+}
+
+.gaps-list li::before {
+  content: '?';
+  position: absolute;
+  left: 0;
+  color: var(--accent-warning);
+  font-weight: 600;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

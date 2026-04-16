@@ -1,0 +1,49 @@
+.claim-card {
+  padding: var(--space-3);
+}
+
+.claim-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.option-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: var(--radius-chip);
+  background: var(--surface-1);
+  color: var(--accent-active);
+  border: 1px solid var(--border);
+}
+
+.criterion {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.strength-bars {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.bar {
+  width: 3px;
+  height: 12px;
+  border-radius: 1px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+
+.bar.active {
+  background: var(--accent-active);
+}
+
+.claim-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}

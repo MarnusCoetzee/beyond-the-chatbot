@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { SessionStateService } from '../../services/session-state.service';
 import { PipelineStatusComponent } from '../pipeline-status/pipeline-status';
 import { TelemetryStripComponent } from '../telemetry-strip/telemetry-strip';
+import { ResearchPacketPanelComponent } from '../research-packet-panel/research-packet-panel';
 
 @Component({
   selector: 'app-deliberation-view',
   standalone: true,
-  imports: [CommonModule, PipelineStatusComponent, TelemetryStripComponent],
+  imports: [CommonModule, PipelineStatusComponent, TelemetryStripComponent, ResearchPacketPanelComponent],
   templateUrl: './deliberation-view.html',
   styleUrl: './deliberation-view.css',
 })

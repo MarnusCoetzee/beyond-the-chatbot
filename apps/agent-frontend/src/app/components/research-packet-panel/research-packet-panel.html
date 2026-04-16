@@ -1,0 +1,39 @@
+@if (isResearching) {
+  <div class="shimmer-bar"></div>
+  <p class="status-text mono">Gathering research...</p>
+}
+
+@if (packet) {
+  <div class="section">
+    <h3 class="label">Sources ({{ packet.webSources.length }})</h3>
+    <div class="source-list">
+      @for (source of packet.webSources; track source.id) {
+        <app-source-card [source]="source" />
+      }
+    </div>
+  </div>
+
+  <div class="section">
+    <h3 class="label">Claims ({{ packet.claims.length }})</h3>
+    <div class="claim-list">
+      @for (claim of packet.claims; track claim.id) {
+        <app-claim-card [claim]="claim" />
+      }
+    </div>
+  </div>
+
+  @if (packet.gaps.length > 0) {
+    <div class="section">
+      <h3 class="label">Knowledge Gaps</h3>
+      <ul class="gaps-list">
+        @for (gap of packet.gaps; track gap) {
+          <li>{{ gap }}</li>
+        }
+      </ul>
+    </div>
+  }
+} @else if (!isResearching) {
+  <div class="empty-state">
+    <p class="mono">Waiting for research phase</p>
+  </div>
+}
