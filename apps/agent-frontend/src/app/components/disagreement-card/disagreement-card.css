@@ -1,0 +1,61 @@
+.disagreement-card {
+  border-left: 2px solid var(--accent-warning);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.topic {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.severity-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: var(--radius-chip);
+}
+
+.severity-low {
+  color: var(--accent-active);
+  border: 1px solid var(--accent-active);
+}
+
+.severity-medium {
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
+}
+
+.severity-high {
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
+}
+
+.agents-in-conflict {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.agent-tag {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: var(--radius-chip);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}

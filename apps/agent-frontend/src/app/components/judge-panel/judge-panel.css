@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.challenge-card {
+  border-left: 2px solid var(--accent-judge);
+}
+
+.challenge-target {
+  color: var(--accent-judge);
+  font-size: 11px;
+  margin-bottom: var(--space-1);
+}
+
+.challenge-prompt {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.synthesizing {
+  text-align: center;
+  color: var(--accent-judge);
+  padding: var(--space-6);
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}

@@ -1,0 +1,90 @@
+.verdict-card {
+  background: var(--surface-2);
+  border: 1px solid var(--accent-judge);
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  animation: verdict-reveal 0.6s ease-out;
+}
+
+.verdict-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.decision-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: var(--radius-chip);
+  color: var(--accent-judge);
+  border: 1px solid var(--accent-judge);
+  background: rgba(155, 92, 255, 0.08);
+}
+
+.confidence {
+  color: var(--accent-judge);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.primary-rec {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.reasoning p, .tradeoffs li, .alternatives li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ranking-list {
+  padding-left: var(--space-5);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.tradeoffs ul, .alternatives ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tradeoffs li, .alternatives li {
+  padding-left: var(--space-3);
+  position: relative;
+}
+
+.tradeoffs li::before {
+  content: '⇄';
+  position: absolute;
+  left: 0;
+  color: var(--accent-warning);
+}
+
+.alternatives li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent-active);
+}
+
+@keyframes verdict-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

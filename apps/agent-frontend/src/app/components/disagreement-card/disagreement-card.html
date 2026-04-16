@@ -1,0 +1,12 @@
+<div class="disagreement-card card">
+  <div class="card-top">
+    <span class="topic">{{ disagreement.topic }}</span>
+    <span class="severity-badge" [class]="severityClass">{{ disagreement.severity }}</span>
+  </div>
+  <div class="agents-in-conflict">
+    @for (agent of disagreement.agentsInConflict; track agent) {
+      <span class="agent-tag">{{ agent }}</span>
+    }
+  </div>
+  <p class="summary">{{ disagreement.summary }}</p>
+</div>
