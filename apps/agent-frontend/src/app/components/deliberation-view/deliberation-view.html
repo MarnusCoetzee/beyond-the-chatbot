@@ -18,9 +18,24 @@
     <div class="column-header">
       <h2 class="label">Specialist Agents</h2>
     </div>
-    <div class="placeholder-content">
-      <p class="mono">Agent analyses will appear here</p>
-    </div>
+    @if (sessionState.currentSession?.analyses?.length) {
+      <div class="agent-cards">
+        @for (analysis of sessionState.currentSession!.analyses; track analysis.agentId) {
+          <app-agent-card
+            [analysis]="analysis"
+            [rebuttal]="getRebuttal(analysis.agentId)"
+          />
+        }
+      </div>
+    } @else if (sessionState.currentSession?.status === 'AGENTS_ANALYZING') {
+      <div class="analyzing-state">
+        <p class="mono">Agents are analyzing...</p>
+      </div>
+    } @else {
+      <div class="placeholder-content">
+        <p class="mono">Waiting for agent analysis</p>
+      </div>
+    }
   </div>
 
   <div class="column col-4" [class.focused]="activeColumn === 3" [class.dimmed]="activeColumn > 0 && activeColumn !== 3">

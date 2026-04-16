@@ -1,0 +1,120 @@
+.agent-card {
+  border-left: 3px solid var(--agent-color);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+}
+
+.agent-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agent-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--agent-color);
+}
+
+.agent-lens {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.confidence-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confidence-value {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.recommendation {
+  margin-bottom: var(--space-3);
+}
+
+.rec-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.expandable {
+  cursor: pointer;
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border);
+}
+
+.reason-list, .risk-list {
+  list-style: none;
+  margin-top: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.reason-list li, .risk-list li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding-left: var(--space-3);
+  position: relative;
+}
+
+.reason-list li::before {
+  content: '+';
+  position: absolute;
+  left: 0;
+  color: var(--accent-success);
+  font-weight: 600;
+}
+
+.risk-list li::before {
+  content: '!';
+  position: absolute;
+  left: 2px;
+  color: var(--accent-warning);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.rebuttal-badge {
+  margin-top: var(--space-3);
+  padding: 4px 12px;
+  border-radius: var(--radius-chip);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.rebuttal-badge.defend {
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
+  background: rgba(54, 211, 153, 0.08);
+}
+
+.rebuttal-badge.revise {
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
+  background: rgba(255, 184, 77, 0.08);
+}
+
+.rebuttal-badge.concede {
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
+  background: rgba(255, 107, 129, 0.08);
+}
