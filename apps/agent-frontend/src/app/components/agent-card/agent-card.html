@@ -24,7 +24,7 @@
     <p class="rec-text">{{ analysis.recommendation }}</p>
   </div>
 
-  <div class="expandable" (click)="toggleReasons()">
+  <button type="button" class="expandable" (click)="toggleReasons()">
     <span class="label">Top Reasons {{ showReasons ? '▾' : '▸' }}</span>
     @if (showReasons) {
       <ul class="reason-list">
@@ -33,9 +33,9 @@
         }
       </ul>
     }
-  </div>
+  </button>
 
-  <div class="expandable" (click)="toggleRisks()">
+  <button type="button" class="expandable" (click)="toggleRisks()">
     <span class="label">Risks {{ showRisks ? '▾' : '▸' }}</span>
     @if (showRisks) {
       <ul class="risk-list">
@@ -44,7 +44,7 @@
         }
       </ul>
     }
-  </div>
+  </button>
 
   @if (rebuttal) {
     <div class="rebuttal-badge" [class]="rebuttalClass">

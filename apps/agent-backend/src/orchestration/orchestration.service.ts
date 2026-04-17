@@ -4,6 +4,7 @@ import type {
   LlmConfig,
   SearchConfig,
   PipelineState,
+  Session,
   SessionEvent,
   StageMetadata,
 } from '@consensus-lab/shared-types';
@@ -40,8 +41,10 @@ export class OrchestrationService {
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
       await this.runStage(sessionId, 'RESEARCHING', async () => {
         this.emitEvent(sessionId, 'research_started');
+        const session = this.getRequiredSession(sessionId);
         const packet = await this.researchService.research(
-          this.sessionRepo.getById(sessionId)!.question,
+          sessionId,
+          session.question,
           llmConfig,
           searchConfig,
         );
@@ -52,11 +55,21 @@ export class OrchestrationService {
       // Stage: AGENTS_ANALYZING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
       await this.runStage(sessionId, 'AGENTS_ANALYZING', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
+        const session = this.getRequiredSession(sessionId);
+        const researchPacket = session.researchPacket;
+        if (!researchPacket) {
+          throw new Error(`Research packet missing for session ${sessionId}`);
+        }
+
         const analyses = await runWithConcurrency(
           SPECIALIST_AGENTS.map((config) => async () => {
             this.emitEvent(sessionId, 'agent_started', config.agentId);
-            const analysis = await this.agentRunner.analyze(config, session.researchPacket!, llmConfig);
+            const analysis = await this.agentRunner.analyze(
+              sessionId,
+              config,
+              researchPacket,
+              llmConfig,
+            );
             this.emitEvent(sessionId, 'agent_analysis_completed', config.agentId, { analysis });
             return analysis;
           }),
@@ -68,10 +81,16 @@ export class OrchestrationService {
       // Stage: JUDGE_REVIEWING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
       await this.runStage(sessionId, 'JUDGE_REVIEWING', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
+        const session = this.getRequiredSession(sessionId);
+        const researchPacket = session.researchPacket;
+        if (!researchPacket) {
+          throw new Error(`Research packet missing for session ${sessionId}`);
+        }
+
         this.emitEvent(sessionId, 'judge_review_started');
         const { disagreements, challengePrompts } = await this.judgeService.review(
-          session.researchPacket!,
+          sessionId,
+          researchPacket,
           session.analyses,
           llmConfig,
         );
@@ -88,15 +107,26 @@ export class OrchestrationService {
       // Stage: REBUTTAL_ROUND
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
       await this.runStage(sessionId, 'REBUTTAL_ROUND', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
+        const session = this.getRequiredSession(sessionId);
+        const researchPacket = session.researchPacket;
+        if (!researchPacket) {
+          throw new Error(`Research packet missing for session ${sessionId}`);
+        }
+
         const challengedAgentIds = new Set(session.challengePrompts.flatMap((c) => c.targetAgentIds));
         const rebuttals = await runWithConcurrency(
           SPECIALIST_AGENTS.filter((a) => challengedAgentIds.has(a.agentId)).map((config) => async () => {
-            const challenge = session.challengePrompts.find((c) => c.targetAgentIds.includes(config.agentId))!;
-            const originalAnalysis = session.analyses.find((a) => a.agentId === config.agentId)!;
+            const challenge = session.challengePrompts.find((c) => c.targetAgentIds.includes(config.agentId));
+            const originalAnalysis = session.analyses.find((a) => a.agentId === config.agentId);
+
+            if (!challenge || !originalAnalysis) {
+              throw new Error(`Rebuttal prerequisites missing for agent ${config.agentId}`);
+            }
+
             const rebuttal = await this.agentRunner.rebut(
+              sessionId,
               config,
-              session.researchPacket!,
+              researchPacket,
               challenge,
               originalAnalysis,
               llmConfig,
@@ -112,16 +142,22 @@ export class OrchestrationService {
       // Stage: FINAL_VERDICT
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
       await this.runStage(sessionId, 'FINAL_VERDICT', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
+        const session = this.getRequiredSession(sessionId);
+        const researchPacket = session.researchPacket;
+        if (!researchPacket) {
+          throw new Error(`Research packet missing for session ${sessionId}`);
+        }
+
         const verdict = await this.judgeService.synthesize(
-          session.researchPacket!,
+          sessionId,
+          researchPacket,
           session.analyses,
           session.rebuttals,
           session.disagreements,
           llmConfig,
         );
         this.sessionRepo.saveVerdict(sessionId, verdict);
-        this.emitEvent(sessionId, 'verdict_completed');
+        this.emitEvent(sessionId, 'verdict_completed', undefined, { verdict });
       }, llmConfig);
 
       // COMPLETE
@@ -157,7 +193,7 @@ export class OrchestrationService {
     work: () => Promise<void>,
     llmConfig: LlmConfig,
   ): Promise<void> {
-    const previousState = this.sessionRepo.getById(sessionId)!.status;
+    const previousState = this.getRequiredSession(sessionId).status;
     this.sessionRepo.updateStatus(sessionId, state);
     this.emitStateChanged(sessionId, state, previousState);
 
@@ -184,6 +220,14 @@ export class OrchestrationService {
 
   private isCancelled(sessionId: string): boolean {
     return this.cancelledSessions.has(sessionId);
+  }
+
+  private getRequiredSession(sessionId: string): Session {
+    const session = this.sessionRepo.getById(sessionId);
+    if (!session) {
+      throw new Error(`Session ${sessionId} not found`);
+    }
+    return session;
   }
 
   private finishCancelled(sessionId: string): void {

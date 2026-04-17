@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SessionService } from '../../services/session.service';
 import { SessionStateService } from '../../services/session-state.service';
 import type { SessionListItem } from '@consensus-lab/shared-types';
@@ -7,12 +8,12 @@ import type { SessionListItem } from '@consensus-lab/shared-types';
 @Component({
   selector: 'app-session-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './session-history.html',
   styleUrl: './session-history.css',
 })
 export class SessionHistoryComponent implements OnInit {
-  @Output() close = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 
   private readonly sessionService = inject(SessionService);
   private readonly sessionState = inject(SessionStateService);
@@ -36,7 +37,7 @@ export class SessionHistoryComponent implements OnInit {
     this.sessionService.get(id).subscribe({
       next: (session) => {
         this.sessionState.loadSession(session);
-        this.close.emit();
+        this.closed.emit();
       },
     });
   }

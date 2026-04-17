@@ -65,4 +65,119 @@ describe('LlmService', () => {
     });
     expect(result.result).toEqual({ name: 'test' });
   });
+
+  describe('trace capture', () => {
+    it('saves a trace via TraceRepository when traceContext is provided', async () => {
+      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+        chat: {
+          completions: {
+            create: jest.fn().mockResolvedValue({
+              choices: [{ message: { content: 'hello world' } }],
+              usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+            }),
+          },
+        },
+      }));
+
+      const save = jest.fn();
+      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+      await service.complete(
+        testConfig,
+        { system: 'sys', user: 'usr' },
+        { sessionId: 's1', stage: 'agent-analysis', actorId: 'pragmatist' },
+      );
+
+      expect(save).toHaveBeenCalledTimes(1);
+      const trace = save.mock.calls[0][0];
+      expect(trace.sessionId).toBe('s1');
+      expect(trace.stage).toBe('agent-analysis');
+      expect(trace.actorId).toBe('pragmatist');
+      expect(trace.systemPrompt).toBe('sys');
+      expect(trace.userPrompt).toBe('usr');
+      expect(trace.rawResponse).toBe('hello world');
+      expect(trace.promptTokens).toBe(10);
+      expect(trace.completionTokens).toBe(5);
+      expect(trace.parsedOutput).toBeUndefined();
+      expect(typeof trace.id).toBe('string');
+      expect(typeof trace.createdAt).toBe('string');
+    });
+
+    it('saves the parsed JSON as parsedOutput for completeJson', async () => {
+      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+        chat: {
+          completions: {
+            create: jest.fn().mockResolvedValue({
+              choices: [{ message: { content: '{"answer":42}' } }],
+            }),
+          },
+        },
+      }));
+
+      const save = jest.fn();
+      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+      await service.completeJson(
+        testConfig,
+        { system: 'sys', user: 'usr' },
+        { sessionId: 's1', stage: 'judge-review' },
+      );
+
+      const trace = save.mock.calls[0][0];
+      expect(trace.parsedOutput).toEqual({ answer: 42 });
+      expect(trace.rawResponse).toBe('{"answer":42}');
+    });
+
+    it('does not call TraceRepository when traceContext is omitted', async () => {
+      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+        chat: {
+          completions: {
+            create: jest.fn().mockResolvedValue({
+              choices: [{ message: { content: 'ok' } }],
+            }),
+          },
+        },
+      }));
+
+      const save = jest.fn();
+      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+      await service.complete(testConfig, { system: 'sys', user: 'usr' });
+
+      expect(save).not.toHaveBeenCalled();
+    });
+
+    it('does not throw when trace save fails', async () => {
+      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+        chat: {
+          completions: {
+            create: jest.fn().mockResolvedValue({
+              choices: [{ message: { content: 'ok' } }],
+            }),
+          },
+        },
+      }));
+
+      const save = jest.fn().mockImplementation(() => {
+        throw new Error('db down');
+      });
+      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+      await expect(
+        service.complete(
+          testConfig,
+          { system: 'sys', user: 'usr' },
+          { sessionId: 's1', stage: 'agent-analysis' },
+        ),
+      ).resolves.toBeDefined();
+    });
+  });
 });

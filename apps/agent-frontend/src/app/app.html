@@ -1,7 +1,9 @@
 <app-control-bar />
 
 <main class="app-main">
-  @if (!sessionState.currentSession) {
+  @if (isReplayRoute) {
+    <router-outlet />
+  } @else if ((sessionState.session$ | async) === null) {
     <div class="landing-view">
       <div class="landing-hero">
         <h1 class="landing-title">Consensus Lab</h1>

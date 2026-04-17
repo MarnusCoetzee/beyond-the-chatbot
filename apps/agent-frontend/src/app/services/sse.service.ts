@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import type { SseStateChanged, SseStageMetadata, SseDone, SseHeartbeat, SessionEvent } from '@consensus-lab/shared-types';
 
@@ -11,6 +11,8 @@ export type SseMessage =
 
 @Injectable({ providedIn: 'root' })
 export class SseService {
+  private readonly zone = inject(NgZone);
+
   connect(sessionId: string): Observable<SseMessage> {
     return new Observable((subscriber) => {
       const url = `http://localhost:3000/api/sessions/${sessionId}/events`;
@@ -26,17 +28,21 @@ export class SseService {
 
       for (const type of eventTypes) {
         eventSource.addEventListener(type, (event: MessageEvent) => {
-          subscriber.next({ type, data: JSON.parse(event.data) } as SseMessage);
-          if (type === 'session.done') {
-            eventSource.close();
-            subscriber.complete();
-          }
+          this.zone.run(() => {
+            subscriber.next({ type, data: JSON.parse(event.data) } as SseMessage);
+            if (type === 'session.done') {
+              eventSource.close();
+              subscriber.complete();
+            }
+          });
         });
       }
 
       eventSource.onerror = () => {
-        eventSource.close();
-        subscriber.complete();
+        this.zone.run(() => {
+          eventSource.close();
+          subscriber.complete();
+        });
       };
 
       return () => eventSource.close();

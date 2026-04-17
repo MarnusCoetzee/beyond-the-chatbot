@@ -1,6 +1,6 @@
 <header class="control-bar glass-panel">
   <div class="bar-left">
-    <span class="brand" (click)="newSession()">Consensus Lab</span>
+    <button type="button" class="brand" (click)="newSession()">Consensus Lab</button>
     <span class="status-chip" [class]="statusClass">{{ statusLabel }}</span>
   </div>
   <div class="bar-right">
@@ -14,9 +14,9 @@
 </header>
 
 @if (showSettings) {
-  <app-settings-dialog (close)="showSettings = false" />
+  <app-settings-dialog (closed)="showSettings = false" />
 }
 
 @if (showHistory) {
-  <app-session-history (close)="showHistory = false" />
+  <app-session-history (closed)="showHistory = false" />
 }

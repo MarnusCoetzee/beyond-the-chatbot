@@ -1,48 +1,60 @@
-<div class="deliberation-grid">
-  <div class="column col-1" [class.focused]="activeColumn === 1" [class.dimmed]="activeColumn > 0 && activeColumn !== 1">
-    <div class="column-header">
-      <h2 class="label">Mission Control</h2>
-    </div>
-    <app-pipeline-status />
-    <app-telemetry-strip />
+@if (canReplay) {
+  <div class="replay-toggle-bar">
+    <button class="replay-toggle" (click)="toggleReplayMode()">
+      {{ replayMode() ? 'Back to deliberation view' : 'Replay mode' }}
+    </button>
   </div>
+}
 
-  <div class="column col-2" [class.focused]="activeColumn === 1" [class.dimmed]="activeColumn > 0 && activeColumn !== 1">
-    <div class="column-header">
-      <h2 class="label">Research Packet</h2>
+@if (replayMode() && canReplay && sessionState.currentSession) {
+  <app-replay-timeline [session]="sessionState.currentSession" />
+} @else {
+  <div class="deliberation-grid">
+    <div class="column col-1" [class.focused]="activeColumn === 1" [class.dimmed]="activeColumn > 0 && activeColumn !== 1">
+      <div class="column-header">
+        <h2 class="label">Mission Control</h2>
+      </div>
+      <app-pipeline-status />
+      <app-telemetry-strip />
     </div>
-    <app-research-packet-panel />
-  </div>
 
-  <div class="column col-3" [class.focused]="activeColumn === 2" [class.dimmed]="activeColumn > 0 && activeColumn !== 2">
-    <div class="column-header">
-      <h2 class="label">Specialist Agents</h2>
+    <div class="column col-2" [class.focused]="activeColumn === 1" [class.dimmed]="activeColumn > 0 && activeColumn !== 1">
+      <div class="column-header">
+        <h2 class="label">Research Packet</h2>
+      </div>
+      <app-research-packet-panel />
     </div>
-    @if (sessionState.currentSession?.analyses?.length) {
-      <div class="agent-cards">
-        @for (analysis of sessionState.currentSession!.analyses; track analysis.agentId) {
-          <app-agent-card
-            [analysis]="analysis"
-            [rebuttal]="getRebuttal(analysis.agentId)"
-          />
-        }
-      </div>
-    } @else if (sessionState.currentSession?.status === 'AGENTS_ANALYZING') {
-      <div class="analyzing-state">
-        <p class="mono">Agents are analyzing...</p>
-      </div>
-    } @else {
-      <div class="placeholder-content">
-        <p class="mono">Waiting for agent analysis</p>
-      </div>
-    }
-  </div>
 
-  <div class="column col-4" [class.focused]="activeColumn === 3" [class.dimmed]="activeColumn > 0 && activeColumn !== 3">
-    <div class="column-header">
-      <h2 class="label">Judge & Verdict</h2>
+    <div class="column col-3" [class.focused]="activeColumn === 2" [class.dimmed]="activeColumn > 0 && activeColumn !== 2">
+      <div class="column-header">
+        <h2 class="label">Specialist Agents</h2>
+      </div>
+      @if (sessionState.currentSession?.analyses?.length) {
+        <div class="agent-cards">
+          @for (analysis of sessionState.currentSession!.analyses; track analysis.agentId) {
+            <app-agent-card
+              [analysis]="analysis"
+              [rebuttal]="getRebuttal(analysis.agentId)"
+            />
+          }
+        </div>
+      } @else if (sessionState.currentSession?.status === 'AGENTS_ANALYZING') {
+        <div class="analyzing-state">
+          <p class="mono">Agents are analyzing...</p>
+        </div>
+      } @else {
+        <div class="placeholder-content">
+          <p class="mono">Waiting for agent analysis</p>
+        </div>
+      }
     </div>
-    <app-judge-panel />
+
+    <div class="column col-4" [class.focused]="activeColumn === 3" [class.dimmed]="activeColumn > 0 && activeColumn !== 3">
+      <div class="column-header">
+        <h2 class="label">Judge & Verdict</h2>
+      </div>
+      <app-judge-panel />
+    </div>
   </div>
-</div>
-<app-pipeline-graph />
+  <app-pipeline-graph />
+}

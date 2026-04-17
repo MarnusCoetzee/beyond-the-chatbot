@@ -21,6 +21,7 @@ export class JudgeService {
   constructor(private readonly llm: LlmService) {}
 
   async review(
+    sessionId: string,
     packet: ResearchPacket,
     analyses: AgentAnalysis[],
     llmConfig: LlmConfig,
@@ -50,10 +51,16 @@ Make challenge prompts specific and targeted. Do not ask generic questions. Refe
       metadata: { stage: 'judge-review' },
     };
 
-    return (await this.llm.completeJson<JudgeReviewResult>(llmConfig, request)).result;
+    return (
+      await this.llm.completeJson<JudgeReviewResult>(llmConfig, request, {
+        sessionId,
+        stage: 'judge-review',
+      })
+    ).result;
   }
 
   async synthesize(
+    sessionId: string,
     packet: ResearchPacket,
     analyses: AgentAnalysis[],
     rebuttals: RebuttalResponse[],
@@ -92,6 +99,11 @@ Be nuanced. If the answer is genuinely context-dependent, say so.`,
       metadata: { stage: 'judge-verdict' },
     };
 
-    return (await this.llm.completeJson<Verdict>(llmConfig, request)).result;
+    return (
+      await this.llm.completeJson<Verdict>(llmConfig, request, {
+        sessionId,
+        stage: 'judge-verdict',
+      })
+    ).result;
   }
 }

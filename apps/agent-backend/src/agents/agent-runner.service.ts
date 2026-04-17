@@ -15,6 +15,7 @@ export class AgentRunnerService {
   constructor(private readonly llm: LlmService) {}
 
   async analyze(
+    sessionId: string,
     agentConfig: AgentConfig,
     packet: ResearchPacket,
     llmConfig: LlmConfig,
@@ -26,7 +27,11 @@ export class AgentRunnerService {
       metadata: { stage: 'agent-analysis', agentId: agentConfig.agentId },
     };
 
-    const response = await this.llm.completeJson<AgentAnalysis>(llmConfig, request);
+    const response = await this.llm.completeJson<AgentAnalysis>(llmConfig, request, {
+      sessionId,
+      stage: 'agent-analysis',
+      actorId: agentConfig.agentId,
+    });
     return {
       ...response.result,
       agentId: agentConfig.agentId,
@@ -36,6 +41,7 @@ export class AgentRunnerService {
   }
 
   async rebut(
+    sessionId: string,
     agentConfig: AgentConfig,
     packet: ResearchPacket,
     challenge: ChallengePrompt,
@@ -66,7 +72,11 @@ Return valid JSON:
       metadata: { stage: 'agent-rebuttal', agentId: agentConfig.agentId },
     };
 
-    const response = await this.llm.completeJson<RebuttalResponse>(llmConfig, request);
+    const response = await this.llm.completeJson<RebuttalResponse>(llmConfig, request, {
+      sessionId,
+      stage: 'agent-rebuttal',
+      actorId: agentConfig.agentId,
+    });
     return {
       ...response.result,
       agentId: agentConfig.agentId,

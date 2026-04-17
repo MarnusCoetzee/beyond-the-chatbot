@@ -1,14 +1,19 @@
-import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus, ConflictException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus, ConflictException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
+import { PendingRunService } from './pending-run.service';
+import { TraceRepository } from './trace.repository';
 import { OrchestrationService } from '../orchestration/orchestration.service';
 import { v4 as uuidv4 } from 'uuid';
-import type { Session, CreateSessionResponse, SessionListItem } from '@consensus-lab/shared-types';
+import type { Session, CreateSessionResponse, SessionListItem, LlmTrace } from '@consensus-lab/shared-types';
 
 @Controller('sessions')
 export class SessionController {
   constructor(
     private readonly sessionRepo: SessionRepository,
+    private readonly pendingRuns: PendingRunService,
+    private readonly traceRepo: TraceRepository,
+    @Inject(forwardRef(() => OrchestrationService))
     private readonly orchestration: OrchestrationService,
   ) {}
 
@@ -29,8 +34,8 @@ export class SessionController {
       createdAt: now,
     };
     this.sessionRepo.create(session);
-    // Fire and forget — orchestration runs in the background
-    this.orchestration.run(session.id, dto.llmConfig, dto.searchConfig);
+    // Store config — pipeline starts when SSE client connects
+    this.pendingRuns.store(session.id, dto.llmConfig, dto.searchConfig);
     return { sessionId: session.id, status: session.status, createdAt: now };
   }
 
@@ -44,6 +49,13 @@ export class SessionController {
     const session = this.sessionRepo.getById(id);
     if (!session) throw new NotFoundException(`Session ${id} not found`);
     return session;
+  }
+
+  @Get(':id/traces')
+  getTraces(@Param('id') id: string): LlmTrace[] {
+    const session = this.sessionRepo.getById(id);
+    if (!session) throw new NotFoundException(`Session ${id} not found`);
+    return this.traceRepo.listBySession(id);
   }
 
   @Post(':id/cancel')

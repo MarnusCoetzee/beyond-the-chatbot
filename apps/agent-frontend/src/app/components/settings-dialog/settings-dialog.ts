@@ -11,7 +11,7 @@ import { SettingsService } from '../../services/settings.service';
   styleUrl: './settings-dialog.css',
 })
 export class SettingsDialogComponent implements OnInit {
-  @Output() close = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
 
   private readonly settings = inject(SettingsService);
 
@@ -54,6 +54,6 @@ export class SettingsDialogComponent implements OnInit {
       this.settings.saveSearchConfig(null);
     }
 
-    this.close.emit();
+    this.closed.emit();
   }
 }

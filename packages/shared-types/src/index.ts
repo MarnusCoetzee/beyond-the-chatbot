@@ -10,3 +10,4 @@ export * from './session-event';
 export * from './stage-metadata';
 export * from './session';
 export * from './api';
+export * from './trace';

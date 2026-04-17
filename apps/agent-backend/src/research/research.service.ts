@@ -15,13 +15,14 @@ export class ResearchService {
   ) {}
 
   async research(
+    sessionId: string,
     question: string,
     llmConfig: LlmConfig,
     searchConfig?: SearchConfig,
   ): Promise<ResearchPacket> {
     if (!searchConfig) {
       this.logger.log('Search disabled — building packet from LLM knowledge');
-      return this.packetBuilder.buildPacketFromKnowledge(question, llmConfig);
+      return this.packetBuilder.buildPacketFromKnowledge(sessionId, question, llmConfig);
     }
 
     this.logger.log(`Searching via ${searchConfig.provider}...`);
@@ -29,13 +30,13 @@ export class ResearchService {
 
     if (rawResults.length === 0) {
       this.logger.warn('No search results — falling back to LLM knowledge');
-      return this.packetBuilder.buildPacketFromKnowledge(question, llmConfig);
+      return this.packetBuilder.buildPacketFromKnowledge(sessionId, question, llmConfig);
     }
 
     this.logger.log(`Extracting claims from ${rawResults.length} results...`);
-    const claims = await this.extraction.extractClaims(question, rawResults, llmConfig);
+    const claims = await this.extraction.extractClaims(sessionId, question, rawResults, llmConfig);
 
     this.logger.log(`Building packet from ${claims.length} claims...`);
-    return this.packetBuilder.buildPacket(question, claims, rawResults, llmConfig);
+    return this.packetBuilder.buildPacket(sessionId, question, claims, rawResults, llmConfig);
   }
 }

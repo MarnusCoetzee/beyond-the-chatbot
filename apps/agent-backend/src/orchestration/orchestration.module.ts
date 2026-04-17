@@ -6,7 +6,12 @@ import { SessionModule } from '../session/session.module';
 import { OrchestrationService } from './orchestration.service';
 
 @Module({
-  imports: [ResearchModule, AgentsModule, JudgeModule, forwardRef(() => SessionModule)],
+  imports: [
+    forwardRef(() => ResearchModule),
+    forwardRef(() => AgentsModule),
+    forwardRef(() => JudgeModule),
+    forwardRef(() => SessionModule),
+  ],
   providers: [OrchestrationService],
   exports: [OrchestrationService],
 })

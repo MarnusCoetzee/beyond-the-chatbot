@@ -9,6 +9,7 @@ export class ResearchExtractionService {
   constructor(private readonly llm: LlmService) {}
 
   async extractClaims(
+    sessionId: string,
     question: string,
     searchResults: RawSearchResult[],
     config: LlmConfig,
@@ -31,10 +32,13 @@ For each claim, provide:
 Return a JSON array of claims.`,
       user: `Question: ${question}\n\nSearch Results:\n${sourceSummary}`,
       temperature: 0.3,
-      metadata: { stage: 'research-extraction' },
+      metadata: { stage: 'claim-extraction' },
     };
 
-    const response = await this.llm.completeJson<ResearchClaim[]>(config, request);
+    const response = await this.llm.completeJson<ResearchClaim[]>(config, request, {
+      sessionId,
+      stage: 'claim-extraction',
+    });
     return response.result;
   }
 }

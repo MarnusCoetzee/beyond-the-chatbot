@@ -1,0 +1,15 @@
+<div class="replay-page">
+  <header>
+    <a routerLink="/">← Back</a>
+    <h1>Session Replay</h1>
+  </header>
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  } @else if (session(); as s) {
+    <p class="question">{{ s.question }}</p>
+    <app-replay-timeline [session]="s" />
+  } @else {
+    <p>Loading…</p>
+  }
+</div>

@@ -9,6 +9,7 @@ export class PacketBuilderService {
   constructor(private readonly llm: LlmService) {}
 
   async buildPacket(
+    sessionId: string,
     question: string,
     claims: ResearchClaim[],
     rawResults: RawSearchResult[],
@@ -40,7 +41,11 @@ Return JSON with this exact shape:
       metadata: { stage: 'packet-building' },
     };
 
-    const response = await this.llm.completeJson<Omit<ResearchPacket, 'claims' | 'webSources'>>(config, request);
+    const response = await this.llm.completeJson<Omit<ResearchPacket, 'claims' | 'webSources'>>(
+      config,
+      request,
+      { sessionId, stage: 'packet-building' },
+    );
 
     return {
       ...response.result,
@@ -49,7 +54,11 @@ Return JSON with this exact shape:
     };
   }
 
-  async buildPacketFromKnowledge(question: string, config: LlmConfig): Promise<ResearchPacket> {
+  async buildPacketFromKnowledge(
+    sessionId: string,
+    question: string,
+    config: LlmConfig,
+  ): Promise<ResearchPacket> {
     const request: LlmRequest = {
       system: `You are a research analyst. Given an engineering question, produce a comprehensive research packet using your training knowledge.
 
@@ -75,7 +84,12 @@ Be thorough. Include at least 3 options, 5+ evaluation criteria, and 10+ claims.
       metadata: { stage: 'packet-building-knowledge' },
     };
 
-    return (await this.llm.completeJson<ResearchPacket>(config, request)).result;
+    return (
+      await this.llm.completeJson<ResearchPacket>(config, request, {
+        sessionId,
+        stage: 'packet-building-knowledge',
+      })
+    ).result;
   }
 
   private inferSourceType(url: string): Source['type'] {

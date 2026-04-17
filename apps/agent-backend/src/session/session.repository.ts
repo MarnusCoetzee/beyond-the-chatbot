@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional, Inject } from '@nestjs/common';
 import Database from 'better-sqlite3';
 import {
   Session,
@@ -15,11 +15,13 @@ import {
   SessionError,
 } from '@consensus-lab/shared-types';
 
+export const DB_PATH_TOKEN = 'DB_PATH';
+
 @Injectable()
 export class SessionRepository {
   private db: Database.Database;
 
-  constructor(dbPath?: string) {
+  constructor(@Optional() @Inject(DB_PATH_TOKEN) dbPath?: string) {
     this.db = new Database(dbPath ?? 'consensus-lab.db');
     this.db.pragma('journal_mode = WAL');
     this.db.exec(`

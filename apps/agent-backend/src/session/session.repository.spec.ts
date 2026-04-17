@@ -24,8 +24,8 @@ describe('SessionRepository', () => {
     repo.create(session);
     const retrieved = repo.getById('test-1');
     expect(retrieved).toBeDefined();
-    expect(retrieved!.question).toBe('React vs Angular?');
-    expect(retrieved!.status).toBe('IDLE');
+    expect(retrieved?.question).toBe('React vs Angular?');
+    expect(retrieved?.status).toBe('IDLE');
   });
 
   it('should list sessions', () => {
@@ -63,7 +63,7 @@ describe('SessionRepository', () => {
     repo.create(session);
     repo.updateStatus('test-3', 'RESEARCHING');
     const retrieved = repo.getById('test-3');
-    expect(retrieved!.status).toBe('RESEARCHING');
+    expect(retrieved?.status).toBe('RESEARCHING');
   });
 
   it('should append events', () => {
@@ -86,7 +86,7 @@ describe('SessionRepository', () => {
       type: 'research_started',
     });
     const retrieved = repo.getById('test-4');
-    expect(retrieved!.events.length).toBe(1);
-    expect(retrieved!.events[0].type).toBe('research_started');
+    expect(retrieved?.events.length).toBe(1);
+    expect(retrieved?.events[0].type).toBe('research_started');
   });
 });
