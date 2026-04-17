@@ -27,11 +27,15 @@ export class AgentRunnerService {
       metadata: { stage: 'agent-analysis', agentId: agentConfig.agentId },
     };
 
-    const response = await this.llm.completeJson<AgentAnalysis>(llmConfig, request, {
-      sessionId,
-      stage: 'agent-analysis',
-      actorId: agentConfig.agentId,
-    });
+    const response = await this.llm.completeJson<AgentAnalysis>(
+      llmConfig,
+      request,
+      {
+        sessionId,
+        stage: 'agent-analysis',
+        actorId: agentConfig.agentId,
+      },
+    );
     return {
       ...response.result,
       agentId: agentConfig.agentId,
@@ -72,11 +76,15 @@ Return valid JSON:
       metadata: { stage: 'agent-rebuttal', agentId: agentConfig.agentId },
     };
 
-    const response = await this.llm.completeJson<RebuttalResponse>(llmConfig, request, {
-      sessionId,
-      stage: 'agent-rebuttal',
-      actorId: agentConfig.agentId,
-    });
+    const response = await this.llm.completeJson<RebuttalResponse>(
+      llmConfig,
+      request,
+      {
+        sessionId,
+        stage: 'agent-rebuttal',
+        actorId: agentConfig.agentId,
+      },
+    );
     return {
       ...response.result,
       agentId: agentConfig.agentId,

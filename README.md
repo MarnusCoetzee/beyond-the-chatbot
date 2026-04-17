@@ -70,6 +70,7 @@ A typical session looks like this:
 ## Feature highlights
 
 ### Deliberative multi-agent pipeline
+
 - Research stage with optional external search
 - Shared evidence packet used by all agents
 - Specialist roles with different reasoning lenses
@@ -77,6 +78,7 @@ A typical session looks like this:
 - Final decision with tradeoffs and confidence
 
 ### Rich demo UI
+
 - premium dark interface
 - live progress states
 - visual pipeline graph
@@ -87,12 +89,14 @@ A typical session looks like this:
 - replay mode for completed runs
 
 ### Replay and observability
+
 - session event timeline
 - stage duration metadata
 - persisted LLM traces by session
 - verdict playback for live demos or post-run analysis
 
 ### Clean monorepo workflow
+
 - Nx-powered task orchestration
 - shared TypeScript models between frontend and backend
 - isolated test targets for apps and e2e suites
@@ -102,12 +106,14 @@ A typical session looks like this:
 ## Architecture overview
 
 ### Applications
+
 - **agent-frontend** — Angular 21 standalone frontend
 - **agent-backend** — NestJS 11 API and orchestration server
 - **agent-frontend-e2e** — Playwright end-to-end tests
 - **agent-backend-e2e** — backend e2e support and validation
 
 ### Shared package
+
 - **@consensus-lab/shared-types** — canonical shared models for packets, events, sessions, verdicts, traces, and API contracts
 
 ### High-level pipeline
@@ -155,6 +161,7 @@ These roles all consume the same research packet, which makes the demo more grou
 ## Tech stack
 
 ### Frontend
+
 - Angular 21
 - standalone components
 - RxJS
@@ -162,12 +169,14 @@ These roles all consume the same research packet, which makes the demo more grou
 - ngx-graph for decision visualization
 
 ### Backend
+
 - NestJS 11
 - OpenAI-compatible LLM client integration
 - SQLite via better-sqlite3
 - SSE-driven live session updates
 
 ### Tooling
+
 - Nx 22 monorepo
 - TypeScript in strict mode
 - ESLint + Prettier
@@ -424,4 +433,3 @@ MIT
 ## Acknowledgements
 
 Built as an honours lecture demo using Angular, NestJS, Nx, and shared TypeScript contracts to showcase observable multi-agent reasoning.
-

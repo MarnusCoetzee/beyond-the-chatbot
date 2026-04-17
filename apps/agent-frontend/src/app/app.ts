@@ -9,7 +9,13 @@ import { SessionStateService } from './services/session-state.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, ControlBarComponent, QuestionInputComponent, DeliberationViewComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    ControlBarComponent,
+    QuestionInputComponent,
+    DeliberationViewComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

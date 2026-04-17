@@ -25,7 +25,13 @@ export class SessionStateService {
     return this.sessionSubject.value;
   }
 
-  initSession(session: Partial<Session> & { id: string; question: string; createdAt: string }): void {
+  initSession(
+    session: Partial<Session> & {
+      id: string;
+      question: string;
+      createdAt: string;
+    },
+  ): void {
     this.sessionSubject.next({
       status: 'IDLE',
       analyses: [],
@@ -55,7 +61,10 @@ export class SessionStateService {
         break;
       case 'session.stage_metadata':
         this.update({
-          stageMetadata: [...session.stageMetadata, message.data as unknown as StageMetadata],
+          stageMetadata: [
+            ...session.stageMetadata,
+            message.data as unknown as StageMetadata,
+          ],
         });
         break;
       case 'session.done':
@@ -74,17 +83,35 @@ export class SessionStateService {
     const events = [...session.events, event];
     const updates: Partial<Session> = { events };
 
-    if (event.type === 'agent_analysis_completed' && event.payload?.['analysis']) {
-      updates.analyses = [...session.analyses, event.payload['analysis'] as AgentAnalysis];
+    if (
+      event.type === 'agent_analysis_completed' &&
+      event.payload?.['analysis']
+    ) {
+      updates.analyses = [
+        ...session.analyses,
+        event.payload['analysis'] as AgentAnalysis,
+      ];
     }
-    if (event.type === 'disagreement_found' && event.payload?.['disagreement']) {
-      updates.disagreements = [...session.disagreements, event.payload['disagreement'] as Disagreement];
+    if (
+      event.type === 'disagreement_found' &&
+      event.payload?.['disagreement']
+    ) {
+      updates.disagreements = [
+        ...session.disagreements,
+        event.payload['disagreement'] as Disagreement,
+      ];
     }
     if (event.type === 'challenge_issued' && event.payload?.['challenge']) {
-      updates.challengePrompts = [...session.challengePrompts, event.payload['challenge'] as ChallengePrompt];
+      updates.challengePrompts = [
+        ...session.challengePrompts,
+        event.payload['challenge'] as ChallengePrompt,
+      ];
     }
     if (event.type === 'rebuttal_completed' && event.payload?.['rebuttal']) {
-      updates.rebuttals = [...session.rebuttals, event.payload['rebuttal'] as RebuttalResponse];
+      updates.rebuttals = [
+        ...session.rebuttals,
+        event.payload['rebuttal'] as RebuttalResponse,
+      ];
     }
     if (event.type === 'verdict_completed' && event.payload?.['verdict']) {
       updates.verdict = event.payload['verdict'] as Verdict;

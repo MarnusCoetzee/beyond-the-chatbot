@@ -10,7 +10,11 @@ export interface PendingRun {
 export class PendingRunService {
   private readonly pending = new Map<string, PendingRun>();
 
-  store(sessionId: string, llmConfig: LlmConfig, searchConfig?: SearchConfig): void {
+  store(
+    sessionId: string,
+    llmConfig: LlmConfig,
+    searchConfig?: SearchConfig,
+  ): void {
     this.pending.set(sessionId, { llmConfig, searchConfig });
   }
 

@@ -1,4 +1,11 @@
-import { IsString, IsUrl, IsNotEmpty, IsOptional, IsIn, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsUrl,
+  IsNotEmpty,
+  IsOptional,
+  IsIn,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class LlmConfigDto {

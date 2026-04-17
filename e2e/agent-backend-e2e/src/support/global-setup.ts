@@ -9,6 +9,7 @@ module.exports = async function () {
   await waitForPortOpen(port, { host });
 
   // Hint: Use globalThis to pass variables to global teardown.
-  (globalThis as typeof globalThis & { __TEARDOWN_MESSAGE__?: string }).__TEARDOWN_MESSAGE__ =
-    '\nTearing down...\n';
+  (
+    globalThis as typeof globalThis & { __TEARDOWN_MESSAGE__?: string }
+  ).__TEARDOWN_MESSAGE__ = '\nTearing down...\n';
 };

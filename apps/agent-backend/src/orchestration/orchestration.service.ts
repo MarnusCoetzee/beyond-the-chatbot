@@ -33,132 +33,185 @@ export class OrchestrationService {
     this.cancelledSessions.add(sessionId);
   }
 
-  async run(sessionId: string, llmConfig: LlmConfig, searchConfig?: SearchConfig): Promise<void> {
+  async run(
+    sessionId: string,
+    llmConfig: LlmConfig,
+    searchConfig?: SearchConfig,
+  ): Promise<void> {
     try {
       this.emitEvent(sessionId, 'question_received');
 
       // Stage: RESEARCHING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'RESEARCHING', async () => {
-        this.emitEvent(sessionId, 'research_started');
-        const session = this.getRequiredSession(sessionId);
-        const packet = await this.researchService.research(
-          sessionId,
-          session.question,
-          llmConfig,
-          searchConfig,
-        );
-        this.sessionRepo.saveResearchPacket(sessionId, packet);
-        this.emitEvent(sessionId, 'packet_completed');
-      }, llmConfig);
+      await this.runStage(
+        sessionId,
+        'RESEARCHING',
+        async () => {
+          this.emitEvent(sessionId, 'research_started');
+          const session = this.getRequiredSession(sessionId);
+          const packet = await this.researchService.research(
+            sessionId,
+            session.question,
+            llmConfig,
+            searchConfig,
+          );
+          this.sessionRepo.saveResearchPacket(sessionId, packet);
+          this.emitEvent(sessionId, 'packet_completed');
+        },
+        llmConfig,
+      );
 
       // Stage: AGENTS_ANALYZING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'AGENTS_ANALYZING', async () => {
-        const session = this.getRequiredSession(sessionId);
-        const researchPacket = session.researchPacket;
-        if (!researchPacket) {
-          throw new Error(`Research packet missing for session ${sessionId}`);
-        }
+      await this.runStage(
+        sessionId,
+        'AGENTS_ANALYZING',
+        async () => {
+          const session = this.getRequiredSession(sessionId);
+          const researchPacket = session.researchPacket;
+          if (!researchPacket) {
+            throw new Error(`Research packet missing for session ${sessionId}`);
+          }
 
-        const analyses = await runWithConcurrency(
-          SPECIALIST_AGENTS.map((config) => async () => {
-            this.emitEvent(sessionId, 'agent_started', config.agentId);
-            const analysis = await this.agentRunner.analyze(
-              sessionId,
-              config,
-              researchPacket,
-              llmConfig,
-            );
-            this.emitEvent(sessionId, 'agent_analysis_completed', config.agentId, { analysis });
-            return analysis;
-          }),
-          4,
-        );
-        this.sessionRepo.saveAnalyses(sessionId, analyses);
-      }, llmConfig);
+          const analyses = await runWithConcurrency(
+            SPECIALIST_AGENTS.map((config) => async () => {
+              this.emitEvent(sessionId, 'agent_started', config.agentId);
+              const analysis = await this.agentRunner.analyze(
+                sessionId,
+                config,
+                researchPacket,
+                llmConfig,
+              );
+              this.emitEvent(
+                sessionId,
+                'agent_analysis_completed',
+                config.agentId,
+                { analysis },
+              );
+              return analysis;
+            }),
+            4,
+          );
+          this.sessionRepo.saveAnalyses(sessionId, analyses);
+        },
+        llmConfig,
+      );
 
       // Stage: JUDGE_REVIEWING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'JUDGE_REVIEWING', async () => {
-        const session = this.getRequiredSession(sessionId);
-        const researchPacket = session.researchPacket;
-        if (!researchPacket) {
-          throw new Error(`Research packet missing for session ${sessionId}`);
-        }
+      await this.runStage(
+        sessionId,
+        'JUDGE_REVIEWING',
+        async () => {
+          const session = this.getRequiredSession(sessionId);
+          const researchPacket = session.researchPacket;
+          if (!researchPacket) {
+            throw new Error(`Research packet missing for session ${sessionId}`);
+          }
 
-        this.emitEvent(sessionId, 'judge_review_started');
-        const { disagreements, challengePrompts } = await this.judgeService.review(
-          sessionId,
-          researchPacket,
-          session.analyses,
-          llmConfig,
-        );
-        this.sessionRepo.saveDisagreements(sessionId, disagreements);
-        this.sessionRepo.saveChallengePrompts(sessionId, challengePrompts);
-        for (const d of disagreements) {
-          this.emitEvent(sessionId, 'disagreement_found', undefined, { disagreement: d });
-        }
-        for (const c of challengePrompts) {
-          this.emitEvent(sessionId, 'challenge_issued', undefined, { challenge: c });
-        }
-      }, llmConfig);
+          this.emitEvent(sessionId, 'judge_review_started');
+          const { disagreements, challengePrompts } =
+            await this.judgeService.review(
+              sessionId,
+              researchPacket,
+              session.analyses,
+              llmConfig,
+            );
+          this.sessionRepo.saveDisagreements(sessionId, disagreements);
+          this.sessionRepo.saveChallengePrompts(sessionId, challengePrompts);
+          for (const d of disagreements) {
+            this.emitEvent(sessionId, 'disagreement_found', undefined, {
+              disagreement: d,
+            });
+          }
+          for (const c of challengePrompts) {
+            this.emitEvent(sessionId, 'challenge_issued', undefined, {
+              challenge: c,
+            });
+          }
+        },
+        llmConfig,
+      );
 
       // Stage: REBUTTAL_ROUND
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'REBUTTAL_ROUND', async () => {
-        const session = this.getRequiredSession(sessionId);
-        const researchPacket = session.researchPacket;
-        if (!researchPacket) {
-          throw new Error(`Research packet missing for session ${sessionId}`);
-        }
+      await this.runStage(
+        sessionId,
+        'REBUTTAL_ROUND',
+        async () => {
+          const session = this.getRequiredSession(sessionId);
+          const researchPacket = session.researchPacket;
+          if (!researchPacket) {
+            throw new Error(`Research packet missing for session ${sessionId}`);
+          }
 
-        const challengedAgentIds = new Set(session.challengePrompts.flatMap((c) => c.targetAgentIds));
-        const rebuttals = await runWithConcurrency(
-          SPECIALIST_AGENTS.filter((a) => challengedAgentIds.has(a.agentId)).map((config) => async () => {
-            const challenge = session.challengePrompts.find((c) => c.targetAgentIds.includes(config.agentId));
-            const originalAnalysis = session.analyses.find((a) => a.agentId === config.agentId);
+          const challengedAgentIds = new Set(
+            session.challengePrompts.flatMap((c) => c.targetAgentIds),
+          );
+          const rebuttals = await runWithConcurrency(
+            SPECIALIST_AGENTS.filter((a) =>
+              challengedAgentIds.has(a.agentId),
+            ).map((config) => async () => {
+              const challenge = session.challengePrompts.find((c) =>
+                c.targetAgentIds.includes(config.agentId),
+              );
+              const originalAnalysis = session.analyses.find(
+                (a) => a.agentId === config.agentId,
+              );
 
-            if (!challenge || !originalAnalysis) {
-              throw new Error(`Rebuttal prerequisites missing for agent ${config.agentId}`);
-            }
+              if (!challenge || !originalAnalysis) {
+                throw new Error(
+                  `Rebuttal prerequisites missing for agent ${config.agentId}`,
+                );
+              }
 
-            const rebuttal = await this.agentRunner.rebut(
-              sessionId,
-              config,
-              researchPacket,
-              challenge,
-              originalAnalysis,
-              llmConfig,
-            );
-            this.emitEvent(sessionId, 'rebuttal_completed', config.agentId, { rebuttal });
-            return rebuttal;
-          }),
-          4,
-        );
-        this.sessionRepo.saveRebuttals(sessionId, rebuttals);
-      }, llmConfig);
+              const rebuttal = await this.agentRunner.rebut(
+                sessionId,
+                config,
+                researchPacket,
+                challenge,
+                originalAnalysis,
+                llmConfig,
+              );
+              this.emitEvent(sessionId, 'rebuttal_completed', config.agentId, {
+                rebuttal,
+              });
+              return rebuttal;
+            }),
+            4,
+          );
+          this.sessionRepo.saveRebuttals(sessionId, rebuttals);
+        },
+        llmConfig,
+      );
 
       // Stage: FINAL_VERDICT
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'FINAL_VERDICT', async () => {
-        const session = this.getRequiredSession(sessionId);
-        const researchPacket = session.researchPacket;
-        if (!researchPacket) {
-          throw new Error(`Research packet missing for session ${sessionId}`);
-        }
+      await this.runStage(
+        sessionId,
+        'FINAL_VERDICT',
+        async () => {
+          const session = this.getRequiredSession(sessionId);
+          const researchPacket = session.researchPacket;
+          if (!researchPacket) {
+            throw new Error(`Research packet missing for session ${sessionId}`);
+          }
 
-        const verdict = await this.judgeService.synthesize(
-          sessionId,
-          researchPacket,
-          session.analyses,
-          session.rebuttals,
-          session.disagreements,
-          llmConfig,
-        );
-        this.sessionRepo.saveVerdict(sessionId, verdict);
-        this.emitEvent(sessionId, 'verdict_completed', undefined, { verdict });
-      }, llmConfig);
+          const verdict = await this.judgeService.synthesize(
+            sessionId,
+            researchPacket,
+            session.analyses,
+            session.rebuttals,
+            session.disagreements,
+            llmConfig,
+          );
+          this.sessionRepo.saveVerdict(sessionId, verdict);
+          this.emitEvent(sessionId, 'verdict_completed', undefined, {
+            verdict,
+          });
+        },
+        llmConfig,
+      );
 
       // COMPLETE
       this.sessionRepo.updateStatus(sessionId, 'COMPLETE');
@@ -168,7 +221,6 @@ export class OrchestrationService {
         sessionId,
         data: { sessionId, finalStatus: 'COMPLETE' },
       });
-
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Pipeline failed for session ${sessionId}: ${message}`);
@@ -257,7 +309,11 @@ export class OrchestrationService {
     this.eventBus.emit({ type: 'session.event', sessionId, data: event });
   }
 
-  private emitStateChanged(sessionId: string, state: PipelineState, previousState: PipelineState): void {
+  private emitStateChanged(
+    sessionId: string,
+    state: PipelineState,
+    previousState: PipelineState,
+  ): void {
     this.eventBus.emit({
       type: 'session.state_changed',
       sessionId,

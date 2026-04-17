@@ -30,7 +30,9 @@ export class TelemetryStripComponent implements OnInit, OnDestroy {
   }
 
   get sourceCount(): number {
-    return this.sessionState.currentSession?.researchPacket?.webSources?.length ?? 0;
+    return (
+      this.sessionState.currentSession?.researchPacket?.webSources?.length ?? 0
+    );
   }
 
   get totalTokens(): number {

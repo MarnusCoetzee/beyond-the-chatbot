@@ -6,14 +6,26 @@
     </div>
     <div class="confidence-ring">
       <svg viewBox="0 0 80 80" width="48" height="48">
-        <circle cx="40" cy="40" r="36" fill="none" stroke="var(--border)" stroke-width="3" />
-        <circle cx="40" cy="40" r="36" fill="none"
+        <circle
+          cx="40"
+          cy="40"
+          r="36"
+          fill="none"
+          stroke="var(--border)"
+          stroke-width="3"
+        />
+        <circle
+          cx="40"
+          cy="40"
+          r="36"
+          fill="none"
           [attr.stroke]="display.color"
           stroke-width="3"
           stroke-linecap="round"
           [attr.stroke-dasharray]="circumference"
           [attr.stroke-dashoffset]="dashOffset"
-          transform="rotate(-90 40 40)" />
+          transform="rotate(-90 40 40)"
+        />
       </svg>
       <span class="confidence-value mono">{{ confidencePercent }}</span>
     </div>
@@ -27,28 +39,26 @@
   <button type="button" class="expandable" (click)="toggleReasons()">
     <span class="label">Top Reasons {{ showReasons ? '▾' : '▸' }}</span>
     @if (showReasons) {
-      <ul class="reason-list">
-        @for (reason of analysis.topReasons; track reason) {
-          <li>{{ reason }}</li>
-        }
-      </ul>
+    <ul class="reason-list">
+      @for (reason of analysis.topReasons; track reason) {
+      <li>{{ reason }}</li>
+      }
+    </ul>
     }
   </button>
 
   <button type="button" class="expandable" (click)="toggleRisks()">
     <span class="label">Risks {{ showRisks ? '▾' : '▸' }}</span>
     @if (showRisks) {
-      <ul class="risk-list">
-        @for (risk of analysis.risks; track risk) {
-          <li>{{ risk }}</li>
-        }
-      </ul>
+    <ul class="risk-list">
+      @for (risk of analysis.risks; track risk) {
+      <li>{{ risk }}</li>
+      }
+    </ul>
     }
   </button>
 
   @if (rebuttal) {
-    <div class="rebuttal-badge" [class]="rebuttalClass">
-      {{ rebuttalLabel }}
-    </div>
+  <div class="rebuttal-badge" [class]="rebuttalClass">{{ rebuttalLabel }}</div>
   }
 </div>

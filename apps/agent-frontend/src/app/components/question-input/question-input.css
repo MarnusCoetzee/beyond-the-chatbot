@@ -36,7 +36,11 @@
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, var(--accent-active), var(--accent-judge));
+  background: linear-gradient(
+    135deg,
+    var(--accent-active),
+    var(--accent-judge)
+  );
   border: none;
   border-radius: var(--radius-card);
   color: white;
@@ -89,7 +93,9 @@
   font-size: 12px;
   padding: 4px 12px;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
   white-space: nowrap;
 }
 
@@ -99,5 +105,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

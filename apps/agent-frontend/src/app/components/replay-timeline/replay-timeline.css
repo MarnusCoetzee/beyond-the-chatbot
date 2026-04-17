@@ -12,7 +12,11 @@
   border: 1px solid rgba(90, 120, 170, 0.22);
   border-radius: 14px;
   padding: 1rem 1.1rem;
-  background: linear-gradient(180deg, rgba(12, 16, 28, 0.96), rgba(10, 12, 20, 0.96));
+  background: linear-gradient(
+    180deg,
+    rgba(12, 16, 28, 0.96),
+    rgba(10, 12, 20, 0.96)
+  );
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
   overflow: hidden;
 }
@@ -148,7 +152,10 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.78rem;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .trace-toggle:hover {

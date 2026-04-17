@@ -59,7 +59,9 @@ export class TraceRepository {
         trace.systemPrompt,
         trace.userPrompt,
         trace.rawResponse,
-        trace.parsedOutput === undefined ? null : JSON.stringify(trace.parsedOutput),
+        trace.parsedOutput === undefined
+          ? null
+          : JSON.stringify(trace.parsedOutput),
         trace.model ?? null,
         trace.promptTokens ?? null,
         trace.completionTokens ?? null,
@@ -83,7 +85,8 @@ export class TraceRepository {
       systemPrompt: row.systemPrompt,
       userPrompt: row.userPrompt,
       rawResponse: row.rawResponse,
-      parsedOutput: row.parsedOutput === null ? undefined : JSON.parse(row.parsedOutput),
+      parsedOutput:
+        row.parsedOutput === null ? undefined : JSON.parse(row.parsedOutput),
       model: row.model ?? undefined,
       promptTokens: row.promptTokens ?? undefined,
       completionTokens: row.completionTokens ?? undefined,

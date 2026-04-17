@@ -25,13 +25,19 @@ export class EventsController {
     const subscription: Subscription = this.eventBus
       .getSessionEvents(sessionId)
       .subscribe((event) => {
-        res.write(`event: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`);
+        res.write(
+          `event: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`,
+        );
       });
 
     // Start the pipeline now that the SSE client is connected
     const pendingRun = this.pendingRuns.take(sessionId);
     if (pendingRun) {
-      this.orchestration.run(sessionId, pendingRun.llmConfig, pendingRun.searchConfig);
+      this.orchestration.run(
+        sessionId,
+        pendingRun.llmConfig,
+        pendingRun.searchConfig,
+      );
     }
 
     res.on('close', () => {

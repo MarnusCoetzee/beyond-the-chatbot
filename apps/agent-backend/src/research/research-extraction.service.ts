@@ -35,10 +35,14 @@ Return a JSON array of claims.`,
       metadata: { stage: 'claim-extraction' },
     };
 
-    const response = await this.llm.completeJson<ResearchClaim[]>(config, request, {
-      sessionId,
-      stage: 'claim-extraction',
-    });
+    const response = await this.llm.completeJson<ResearchClaim[]>(
+      config,
+      request,
+      {
+        sessionId,
+        stage: 'claim-extraction',
+      },
+    );
     return response.result;
   }
 }

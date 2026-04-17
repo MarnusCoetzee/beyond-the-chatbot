@@ -14,21 +14,19 @@
       (click)="submit()"
     >
       @if (isSubmitting) {
-        <span class="spinner"></span>
-      } @else {
-        Deliberate
-      }
+      <span class="spinner"></span>
+      } @else { Deliberate }
     </button>
   </div>
 
   @if (error) {
-    <p class="error-msg">{{ error }}</p>
+  <p class="error-msg">{{ error }}</p>
   }
 
   <div class="example-chips">
     <span class="label">Try:</span>
     @for (prompt of examplePrompts; track prompt) {
-      <button class="chip" (click)="useExample(prompt)">{{ prompt }}</button>
+    <button class="chip" (click)="useExample(prompt)">{{ prompt }}</button>
     }
   </div>
 </div>

@@ -1,83 +1,98 @@
 <div class="timeline">
   @for (card of cards(); track card.stage + (card.actorId ?? '')) {
-    <article class="timeline-card" [class]="'timeline-card kind-' + card.kind">
-      <div class="card-header">
-        <div class="card-heading">
-          <h3 class="card-title">{{ card.title }}</h3>
-          @if (card.subtitle) {
-            <span class="card-chip mono">{{ card.subtitle }}</span>
-          }
-        </div>
-        <span class="stage-chip mono">{{ card.stage.replaceAll('-', ' ') }}</span>
-      </div>
-
-      <div class="card-body">
-        @switch (card.kind) {
-          @case ('research') {
-            <div class="stat-row">
-              <span class="stat-pill">{{ session.researchPacket?.options?.length ?? 0 }} options</span>
-              <span class="stat-pill">{{ session.researchPacket?.claims?.length ?? 0 }} claims</span>
-            </div>
-            <p class="summary-text">{{ session.researchPacket?.options?.join(' • ') }}</p>
-          }
-          @case ('analysis') {
-            @if (analysisFor(card.actorId!); as a) {
-              <p class="summary-text"><strong>Recommendation:</strong> {{ a.recommendation }}</p>
-              <div class="reason-block">
-                <span class="section-label">Top reasons</span>
-                <ul class="reason-list">
-                  @for (reason of a.topReasons; track reason) {
-                    <li>{{ reason }}</li>
-                  }
-                </ul>
-              </div>
-            }
-          }
-          @case ('judge-review') {
-            <div class="stat-row">
-              <span class="stat-pill">{{ session.disagreements.length }} disagreements</span>
-              <span class="stat-pill">{{ session.challengePrompts.length }} challenges</span>
-            </div>
-          }
-          @case ('rebuttal') {
-            @if (rebuttalFor(card.actorId!); as r) {
-              <p class="summary-text"><strong>Action:</strong> {{ r.action }}</p>
-              <p class="summary-text">{{ r.response }}</p>
-            }
-          }
-          @case ('verdict') {
-            @if (session.verdict; as v) {
-              <p class="summary-text"><strong>{{ v.primaryRecommendation }}</strong> with {{ v.finalConfidence }}% confidence</p>
-              <p class="summary-text">{{ v.reasoning }}</p>
-            }
-          }
+  <article class="timeline-card" [class]="'timeline-card kind-' + card.kind">
+    <div class="card-header">
+      <div class="card-heading">
+        <h3 class="card-title">{{ card.title }}</h3>
+        @if (card.subtitle) {
+        <span class="card-chip mono">{{ card.subtitle }}</span>
         }
       </div>
+      <span class="stage-chip mono">{{ card.stage.replaceAll('-', ' ') }}</span>
+    </div>
 
-      <div class="trace-section">
-        @if (!isExpanded(card.stage, card.actorId)) {
-          <button class="trace-toggle" type="button" (click)="expandTrace(card.stage, card.actorId)">Show LLM Trace</button>
-        } @else {
-          <button class="trace-toggle" type="button" (click)="collapseTrace(card.stage, card.actorId)">Hide LLM Trace</button>
-          @if (tracesLoading()) {
-            <p class="mono helper-text">Loading traces…</p>
-          } @else if (getTrace(card.stage, card.actorId); as trace) {
-            <div class="trace-panel">
-              <h4 class="label">System Prompt</h4>
-              <pre class="trace-pre">{{ trace.systemPrompt }}</pre>
-              <h4 class="label">User Prompt</h4>
-              <pre class="trace-pre">{{ trace.userPrompt }}</pre>
-              <h4 class="label">Raw Response</h4>
-              <pre class="trace-pre">{{ trace.rawResponse }}</pre>
-              <p class="mono helper-text">
-                {{ trace.model }} · {{ trace.promptTokens ?? '?' }} + {{ trace.completionTokens ?? '?' }} tokens
-              </p>
-            </div>
-          } @else if (tracesLoaded()) {
-            <p class="mono helper-text">Traces not available for this session.</p>
-          }
-        }
+    <div class="card-body">
+      @switch (card.kind) { @case ('research') {
+      <div class="stat-row">
+        <span class="stat-pill"
+          >{{ session.researchPacket?.options?.length ?? 0 }} options</span
+        >
+        <span class="stat-pill"
+          >{{ session.researchPacket?.claims?.length ?? 0 }} claims</span
+        >
       </div>
-    </article>
+      <p class="summary-text">
+        {{ session.researchPacket?.options?.join(' • ') }}
+      </p>
+      } @case ('analysis') { @if (analysisFor(card.actorId!); as a) {
+      <p class="summary-text">
+        <strong>Recommendation:</strong> {{ a.recommendation }}
+      </p>
+      <div class="reason-block">
+        <span class="section-label">Top reasons</span>
+        <ul class="reason-list">
+          @for (reason of a.topReasons; track reason) {
+          <li>{{ reason }}</li>
+          }
+        </ul>
+      </div>
+      } } @case ('judge-review') {
+      <div class="stat-row">
+        <span class="stat-pill"
+          >{{ session.disagreements.length }} disagreements</span
+        >
+        <span class="stat-pill"
+          >{{ session.challengePrompts.length }} challenges</span
+        >
+      </div>
+      } @case ('rebuttal') { @if (rebuttalFor(card.actorId!); as r) {
+      <p class="summary-text"><strong>Action:</strong> {{ r.action }}</p>
+      <p class="summary-text">{{ r.response }}</p>
+      } } @case ('verdict') { @if (session.verdict; as v) {
+      <p class="summary-text">
+        <strong>{{ v.primaryRecommendation }}</strong> with {{ v.finalConfidence
+        }}% confidence
+      </p>
+      <p class="summary-text">{{ v.reasoning }}</p>
+      } } }
+    </div>
+
+    <div class="trace-section">
+      @if (!isExpanded(card.stage, card.actorId)) {
+      <button
+        class="trace-toggle"
+        type="button"
+        (click)="expandTrace(card.stage, card.actorId)"
+      >
+        Show LLM Trace
+      </button>
+      } @else {
+      <button
+        class="trace-toggle"
+        type="button"
+        (click)="collapseTrace(card.stage, card.actorId)"
+      >
+        Hide LLM Trace
+      </button>
+      @if (tracesLoading()) {
+      <p class="mono helper-text">Loading traces…</p>
+      } @else if (getTrace(card.stage, card.actorId); as trace) {
+      <div class="trace-panel">
+        <h4 class="label">System Prompt</h4>
+        <pre class="trace-pre">{{ trace.systemPrompt }}</pre>
+        <h4 class="label">User Prompt</h4>
+        <pre class="trace-pre">{{ trace.userPrompt }}</pre>
+        <h4 class="label">Raw Response</h4>
+        <pre class="trace-pre">{{ trace.rawResponse }}</pre>
+        <p class="mono helper-text">
+          {{ trace.model }} · {{ trace.promptTokens ?? '?' }} + {{
+          trace.completionTokens ?? '?' }} tokens
+        </p>
+      </div>
+      } @else if (tracesLoaded()) {
+      <p class="mono helper-text">Traces not available for this session.</p>
+      } }
+    </div>
+  </article>
   }
 </div>

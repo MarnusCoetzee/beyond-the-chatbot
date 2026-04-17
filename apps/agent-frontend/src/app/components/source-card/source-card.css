@@ -20,10 +20,22 @@
   color: var(--text-muted);
 }
 
-.type-badge[data-type="docs"] { color: var(--accent-active); border-color: var(--accent-active); }
-.type-badge[data-type="benchmark"] { color: var(--accent-success); border-color: var(--accent-success); }
-.type-badge[data-type="blog"] { color: var(--accent-warning); border-color: var(--accent-warning); }
-.type-badge[data-type="forum"] { color: var(--accent-judge); border-color: var(--accent-judge); }
+.type-badge[data-type='docs'] {
+  color: var(--accent-active);
+  border-color: var(--accent-active);
+}
+.type-badge[data-type='benchmark'] {
+  color: var(--accent-success);
+  border-color: var(--accent-success);
+}
+.type-badge[data-type='blog'] {
+  color: var(--accent-warning);
+  border-color: var(--accent-warning);
+}
+.type-badge[data-type='forum'] {
+  color: var(--accent-judge);
+  border-color: var(--accent-judge);
+}
 
 .domain {
   color: var(--text-muted);

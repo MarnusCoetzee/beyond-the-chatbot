@@ -27,7 +27,11 @@
 .landing-title {
   font-size: 3rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-active), var(--accent-judge));
+  background: linear-gradient(
+    135deg,
+    var(--accent-active),
+    var(--accent-judge)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

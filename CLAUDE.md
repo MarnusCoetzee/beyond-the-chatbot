@@ -52,6 +52,7 @@ Always run tasks through `npx nx`, never raw `ng`, `nest`, `tsc`, etc.
 ## Environment Variables
 
 Copy `.example.env` to `.env` at workspace root. Required:
+
 - `LLM_API_KEY` — API key for the LLM provider
 - `PORT` — Backend port (default: 3000)
 

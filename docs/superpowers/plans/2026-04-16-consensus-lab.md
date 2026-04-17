@@ -172,6 +172,7 @@ apps/agent-frontend/src/
 Create the `packages/shared-types` library with all interfaces from the PRD. This is the foundation everything else imports.
 
 **Files:**
+
 - Create: `packages/shared-types/package.json`
 - Create: `packages/shared-types/tsconfig.json`
 - Create: `packages/shared-types/tsconfig.lib.json`
@@ -234,6 +235,7 @@ Create the `packages/shared-types` library with all interfaces from the PRD. Thi
 - [ ] **Step 4: Create all type files**
 
 `packages/shared-types/src/pipeline-state.ts`:
+
 ```typescript
 export type PipelineState =
   | 'IDLE'
@@ -251,6 +253,7 @@ export type ConfidenceLevel = 'high' | 'medium' | 'low';
 ```
 
 `packages/shared-types/src/agent-config.ts`:
+
 ```typescript
 export type AgentRole = 'pragmatist' | 'performance' | 'dx' | 'skeptic';
 
@@ -264,6 +267,7 @@ export interface AgentConfig {
 ```
 
 `packages/shared-types/src/research-packet.ts`:
+
 ```typescript
 import { ConfidenceLevel } from './pipeline-state';
 
@@ -302,6 +306,7 @@ export interface ResearchPacket {
 ```
 
 `packages/shared-types/src/evidence-ref.ts`:
+
 ```typescript
 export interface EvidenceRef {
   sourceId: string;
@@ -311,6 +316,7 @@ export interface EvidenceRef {
 ```
 
 `packages/shared-types/src/agent-analysis.ts`:
+
 ```typescript
 import { AgentRole } from './agent-config';
 import { EvidenceRef } from './evidence-ref';
@@ -329,6 +335,7 @@ export interface AgentAnalysis {
 ```
 
 `packages/shared-types/src/disagreement.ts`:
+
 ```typescript
 export interface Disagreement {
   topic: string;
@@ -339,6 +346,7 @@ export interface Disagreement {
 ```
 
 `packages/shared-types/src/judge.ts`:
+
 ```typescript
 export interface ChallengePrompt {
   id: string;
@@ -359,6 +367,7 @@ export interface RebuttalResponse {
 ```
 
 `packages/shared-types/src/verdict.ts`:
+
 ```typescript
 import { EvidenceRef } from './evidence-ref';
 
@@ -375,6 +384,7 @@ export interface Verdict {
 ```
 
 `packages/shared-types/src/session-event.ts`:
+
 ```typescript
 export type SessionEventType =
   | 'question_received'
@@ -401,6 +411,7 @@ export interface SessionEvent {
 ```
 
 `packages/shared-types/src/stage-metadata.ts`:
+
 ```typescript
 import { PipelineState } from './pipeline-state';
 
@@ -421,6 +432,7 @@ export interface StageMetadata {
 ```
 
 `packages/shared-types/src/session.ts`:
+
 ```typescript
 import { PipelineState } from './pipeline-state';
 import { ResearchPacket } from './research-packet';
@@ -455,6 +467,7 @@ export interface Session {
 ```
 
 `packages/shared-types/src/api.ts`:
+
 ```typescript
 import { PipelineState } from './pipeline-state';
 
@@ -511,6 +524,7 @@ export interface SseHeartbeat {
 ```
 
 `packages/shared-types/src/index.ts`:
+
 ```typescript
 export * from './pipeline-state';
 export * from './agent-config';
@@ -529,6 +543,7 @@ export * from './api';
 - [ ] **Step 5: Add path alias to tsconfig.base.json**
 
 Add to `tsconfig.base.json` `compilerOptions`:
+
 ```json
 "paths": {
   "@consensus-lab/shared-types": ["packages/shared-types/src/index.ts"]
@@ -554,6 +569,7 @@ git commit -m "feat: add shared-types package with all PRD interfaces"
 Install OpenAI SDK, better-sqlite3, class-validator, class-transformer, uuid.
 
 **Files:**
+
 - Modify: `package.json` (via npm install)
 
 - [ ] **Step 1: Install production dependencies**
@@ -583,6 +599,7 @@ git commit -m "chore: install backend deps (openai, better-sqlite3, class-valida
 Install @swimlane/ngx-graph, @angular/cdk, and fonts.
 
 **Files:**
+
 - Modify: `package.json` (via npm install)
 
 - [ ] **Step 1: Install frontend dependencies**
@@ -608,6 +625,7 @@ git commit -m "chore: install frontend deps (ngx-graph, angular cdk)"
 The only module that talks to an LLM provider. Provider-agnostic via OpenAI SDK with configurable baseUrl.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/llm/llm.module.ts`
 - Create: `apps/agent-backend/src/llm/llm.service.ts`
 - Create: `apps/agent-backend/src/llm/llm.service.spec.ts`
@@ -615,6 +633,7 @@ The only module that talks to an LLM provider. Provider-agnostic via OpenAI SDK 
 - [ ] **Step 1: Write the LlmService test**
 
 `apps/agent-backend/src/llm/llm.service.spec.ts`:
+
 ```typescript
 import { Test } from '@nestjs/testing';
 import { LlmService } from './llm.service';
@@ -629,7 +648,11 @@ jest.mock('openai', () => {
         completions: {
           create: jest.fn().mockResolvedValue({
             choices: [{ message: { content: 'test response' } }],
-            usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+            usage: {
+              prompt_tokens: 10,
+              completion_tokens: 5,
+              total_tokens: 15,
+            },
           }),
         },
       },
@@ -672,7 +695,11 @@ describe('LlmService', () => {
         completions: {
           create: jest.fn().mockResolvedValue({
             choices: [{ message: { content: '{"name":"test"}' } }],
-            usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+            usage: {
+              prompt_tokens: 10,
+              completion_tokens: 5,
+              total_tokens: 15,
+            },
           }),
         },
       },
@@ -695,7 +722,8 @@ Expected: FAIL — `llm.service.ts` does not exist yet.
 - [ ] **Step 3: Implement LlmService**
 
 `apps/agent-backend/src/llm/llm.service.ts`:
-```typescript
+
+````typescript
 import { Injectable, Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 import { LlmConfig } from '@consensus-lab/shared-types';
@@ -710,15 +738,25 @@ export interface LlmRequest {
 
 export interface LlmResponse<T = string> {
   result: T;
-  usage?: { promptTokens: number; completionTokens: number; totalTokens: number };
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
 }
 
 @Injectable()
 export class LlmService {
   private readonly logger = new Logger(LlmService.name);
 
-  async complete(config: LlmConfig, request: LlmRequest): Promise<LlmResponse<string>> {
-    const client = new OpenAI({ baseURL: config.baseUrl, apiKey: config.apiKey });
+  async complete(
+    config: LlmConfig,
+    request: LlmRequest,
+  ): Promise<LlmResponse<string>> {
+    const client = new OpenAI({
+      baseURL: config.baseUrl,
+      apiKey: config.apiKey,
+    });
     const response = await client.chat.completions.create({
       model: config.model,
       messages: [
@@ -739,26 +777,38 @@ export class LlmService {
       : undefined;
 
     if (request.metadata) {
-      this.logger.log(`LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`);
+      this.logger.log(
+        `LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`,
+      );
     }
 
     return { result: content, usage };
   }
 
-  async completeJson<T>(config: LlmConfig, request: LlmRequest): Promise<LlmResponse<T>> {
+  async completeJson<T>(
+    config: LlmConfig,
+    request: LlmRequest,
+  ): Promise<LlmResponse<T>> {
     const systemWithJsonInstruction = `${request.system}\n\nYou MUST respond with valid JSON only. No markdown, no code fences, no explanation.`;
-    const response = await this.complete(config, { ...request, system: systemWithJsonInstruction });
+    const response = await this.complete(config, {
+      ...request,
+      system: systemWithJsonInstruction,
+    });
 
-    const cleaned = response.result.replace(/```json?\n?/g, '').replace(/```\n?/g, '').trim();
+    const cleaned = response.result
+      .replace(/```json?\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim();
     const parsed = JSON.parse(cleaned) as T;
     return { result: parsed, usage: response.usage };
   }
 }
-```
+````
 
 - [ ] **Step 4: Create LlmModule**
 
 `apps/agent-backend/src/llm/llm.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { LlmService } from './llm.service';
@@ -789,6 +839,7 @@ git commit -m "feat(backend): add LlmModule with provider-agnostic OpenAI SDK wr
 Internal event bus and SSE endpoint. Other modules depend on this for emitting events.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/events/event-bus.service.ts`
 - Create: `apps/agent-backend/src/events/events.controller.ts`
 - Create: `apps/agent-backend/src/events/events.module.ts`
@@ -797,15 +848,26 @@ Internal event bus and SSE endpoint. Other modules depend on this for emitting e
 - [ ] **Step 1: Create EventBusService**
 
 `apps/agent-backend/src/events/event-bus.service.ts`:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { Subject, Observable, filter } from 'rxjs';
-import { SessionEvent, SseStateChanged, SseStageMetadata, SseDone, SseHeartbeat } from '@consensus-lab/shared-types';
+import {
+  SessionEvent,
+  SseStateChanged,
+  SseStageMetadata,
+  SseDone,
+  SseHeartbeat,
+} from '@consensus-lab/shared-types';
 
 export type SseEvent =
   | { type: 'session.event'; sessionId: string; data: SessionEvent }
   | { type: 'session.state_changed'; sessionId: string; data: SseStateChanged }
-  | { type: 'session.stage_metadata'; sessionId: string; data: SseStageMetadata }
+  | {
+      type: 'session.stage_metadata';
+      sessionId: string;
+      data: SseStageMetadata;
+    }
   | { type: 'session.heartbeat'; sessionId: string; data: SseHeartbeat }
   | { type: 'session.done'; sessionId: string; data: SseDone };
 
@@ -826,6 +888,7 @@ export class EventBusService {
 - [ ] **Step 2: Create SSE EventsController**
 
 `apps/agent-backend/src/events/events.controller.ts`:
+
 ```typescript
 import { Controller, Get, Param, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
@@ -848,7 +911,9 @@ export class EventsController {
     const subscription: Subscription = this.eventBus
       .getSessionEvents(sessionId)
       .subscribe((event) => {
-        res.write(`event: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`);
+        res.write(
+          `event: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`,
+        );
       });
 
     res.on('close', () => {
@@ -861,6 +926,7 @@ export class EventsController {
 - [ ] **Step 3: Create EventsModule**
 
 `apps/agent-backend/src/events/events.module.ts`:
+
 ```typescript
 import { Module, Global } from '@nestjs/common';
 import { EventBusService } from './event-bus.service';
@@ -878,6 +944,7 @@ export class EventsModule {}
 - [ ] **Step 4: Create concurrency utility**
 
 `apps/agent-backend/src/util/concurrency.ts`:
+
 ```typescript
 export async function runWithConcurrency<T>(
   tasks: (() => Promise<T>)[],
@@ -920,6 +987,7 @@ git commit -m "feat(backend): add EventsModule with SSE streaming and event bus"
 SQLite persistence via better-sqlite3 and the REST controller for sessions.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/session/session.repository.ts`
 - Create: `apps/agent-backend/src/session/session.repository.spec.ts`
 - Create: `apps/agent-backend/src/session/dto/create-session.dto.ts`
@@ -929,6 +997,7 @@ SQLite persistence via better-sqlite3 and the REST controller for sessions.
 - [ ] **Step 1: Write the SessionRepository test**
 
 `apps/agent-backend/src/session/session.repository.spec.ts`:
+
 ```typescript
 import { SessionRepository } from './session.repository';
 import { Session } from '@consensus-lab/shared-types';
@@ -1032,6 +1101,7 @@ Expected: FAIL — `session.repository.ts` does not exist.
 - [ ] **Step 3: Implement SessionRepository**
 
 `apps/agent-backend/src/session/session.repository.ts`:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import Database from 'better-sqlite3';
@@ -1066,26 +1136,30 @@ export class SessionRepository {
   }
 
   create(session: Session): void {
-    this.db.prepare('INSERT INTO sessions (id, data) VALUES (?, ?)').run(
-      session.id,
-      JSON.stringify(session),
-    );
+    this.db
+      .prepare('INSERT INTO sessions (id, data) VALUES (?, ?)')
+      .run(session.id, JSON.stringify(session));
   }
 
   getById(id: string): Session | undefined {
-    const row = this.db.prepare('SELECT data FROM sessions WHERE id = ?').get(id) as
-      | { data: string }
-      | undefined;
+    const row = this.db
+      .prepare('SELECT data FROM sessions WHERE id = ?')
+      .get(id) as { data: string } | undefined;
     return row ? (JSON.parse(row.data) as Session) : undefined;
   }
 
   list(): SessionListItem[] {
     const rows = this.db
-      .prepare('SELECT data FROM sessions ORDER BY json_extract(data, \'$.createdAt\') DESC')
+      .prepare(
+        "SELECT data FROM sessions ORDER BY json_extract(data, '$.createdAt') DESC",
+      )
       .all() as { data: string }[];
     return rows.map((row) => {
       const session = JSON.parse(row.data) as Session;
-      const totalDuration = session.stageMetadata.reduce((sum, m) => sum + (m.durationMs ?? 0), 0);
+      const totalDuration = session.stageMetadata.reduce(
+        (sum, m) => sum + (m.durationMs ?? 0),
+        0,
+      );
       return {
         id: session.id,
         question: session.question,
@@ -1168,10 +1242,9 @@ export class SessionRepository {
   }
 
   private save(session: Session): void {
-    this.db.prepare('UPDATE sessions SET data = ? WHERE id = ?').run(
-      JSON.stringify(session),
-      session.id,
-    );
+    this.db
+      .prepare('UPDATE sessions SET data = ? WHERE id = ?')
+      .run(JSON.stringify(session), session.id);
   }
 }
 ```
@@ -1184,8 +1257,16 @@ Expected: PASS.
 - [ ] **Step 5: Create the DTO**
 
 `apps/agent-backend/src/session/dto/create-session.dto.ts`:
+
 ```typescript
-import { IsString, IsUrl, IsNotEmpty, IsOptional, IsIn, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsUrl,
+  IsNotEmpty,
+  IsOptional,
+  IsIn,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class LlmConfigDto {
@@ -1229,12 +1310,27 @@ export class CreateSessionDto {
 - [ ] **Step 6: Create SessionController**
 
 `apps/agent-backend/src/session/session.controller.ts`:
+
 ```typescript
-import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { Session, CreateSessionResponse, SessionListItem } from '@consensus-lab/shared-types';
+import {
+  Session,
+  CreateSessionResponse,
+  SessionListItem,
+} from '@consensus-lab/shared-types';
 
 @Controller('sessions')
 export class SessionController {
@@ -1279,7 +1375,9 @@ export class SessionController {
     const session = this.sessionRepo.getById(id);
     if (!session) throw new NotFoundException(`Session ${id} not found`);
     if (['COMPLETE', 'ERROR', 'CANCELLED'].includes(session.status)) {
-      throw new ConflictException(`Session is already in terminal state: ${session.status}`);
+      throw new ConflictException(
+        `Session is already in terminal state: ${session.status}`,
+      );
     }
     this.sessionRepo.updateStatus(id, 'CANCELLED');
     return { status: 'CANCELLED' };
@@ -1290,6 +1388,7 @@ export class SessionController {
 - [ ] **Step 7: Create SessionModule**
 
 `apps/agent-backend/src/session/session.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { SessionController } from './session.controller';
@@ -1317,6 +1416,7 @@ git commit -m "feat(backend): add SessionModule with SQLite persistence and REST
 Three-layer research pipeline: search -> extraction -> packet building.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/research/search-provider.service.ts`
 - Create: `apps/agent-backend/src/research/research-extraction.service.ts`
 - Create: `apps/agent-backend/src/research/packet-builder.service.ts`
@@ -1327,6 +1427,7 @@ Three-layer research pipeline: search -> extraction -> packet building.
 - [ ] **Step 1: Create SearchProviderService**
 
 `apps/agent-backend/src/research/search-provider.service.ts`:
+
 ```typescript
 import { Injectable, Logger } from '@nestjs/common';
 import { SearchConfig } from '@consensus-lab/shared-types';
@@ -1341,7 +1442,10 @@ export interface RawSearchResult {
 export class SearchProviderService {
   private readonly logger = new Logger(SearchProviderService.name);
 
-  async search(query: string, config: SearchConfig): Promise<RawSearchResult[]> {
+  async search(
+    query: string,
+    config: SearchConfig,
+  ): Promise<RawSearchResult[]> {
     if (config.provider === 'brave') {
       return this.searchBrave(query, config.apiKey);
     }
@@ -1351,7 +1455,10 @@ export class SearchProviderService {
     return [];
   }
 
-  private async searchBrave(query: string, apiKey: string): Promise<RawSearchResult[]> {
+  private async searchBrave(
+    query: string,
+    apiKey: string,
+  ): Promise<RawSearchResult[]> {
     const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=10`;
     const response = await fetch(url, {
       headers: { 'X-Subscription-Token': apiKey, Accept: 'application/json' },
@@ -1360,7 +1467,11 @@ export class SearchProviderService {
       this.logger.warn(`Brave search failed: ${response.status}`);
       return [];
     }
-    const data = (await response.json()) as { web?: { results?: Array<{ title: string; url: string; description: string }> } };
+    const data = (await response.json()) as {
+      web?: {
+        results?: Array<{ title: string; url: string; description: string }>;
+      };
+    };
     return (data.web?.results ?? []).map((r) => ({
       title: r.title,
       url: r.url,
@@ -1368,17 +1479,25 @@ export class SearchProviderService {
     }));
   }
 
-  private async searchFirecrawl(query: string, apiKey: string): Promise<RawSearchResult[]> {
+  private async searchFirecrawl(
+    query: string,
+    apiKey: string,
+  ): Promise<RawSearchResult[]> {
     const response = await fetch('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({ query, limit: 10 }),
     });
     if (!response.ok) {
       this.logger.warn(`Firecrawl search failed: ${response.status}`);
       return [];
     }
-    const data = (await response.json()) as { data?: Array<{ title?: string; url: string; description?: string }> };
+    const data = (await response.json()) as {
+      data?: Array<{ title?: string; url: string; description?: string }>;
+    };
     return (data.data ?? []).map((r) => ({
       title: r.title ?? '',
       url: r.url,
@@ -1391,6 +1510,7 @@ export class SearchProviderService {
 - [ ] **Step 2: Create ResearchExtractionService**
 
 `apps/agent-backend/src/research/research-extraction.service.ts`:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { LlmService, LlmRequest } from '../llm/llm.service';
@@ -1427,7 +1547,10 @@ Return a JSON array of claims.`,
       metadata: { stage: 'research-extraction' },
     };
 
-    const response = await this.llm.completeJson<ResearchClaim[]>(config, request);
+    const response = await this.llm.completeJson<ResearchClaim[]>(
+      config,
+      request,
+    );
     return response.result;
   }
 }
@@ -1436,10 +1559,16 @@ Return a JSON array of claims.`,
 - [ ] **Step 3: Create PacketBuilderService**
 
 `apps/agent-backend/src/research/packet-builder.service.ts`:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { LlmService, LlmRequest } from '../llm/llm.service';
-import { LlmConfig, ResearchPacket, ResearchClaim, Source } from '@consensus-lab/shared-types';
+import {
+  LlmConfig,
+  ResearchPacket,
+  ResearchClaim,
+  Source,
+} from '@consensus-lab/shared-types';
 import { RawSearchResult } from './search-provider.service';
 
 @Injectable()
@@ -1478,7 +1607,9 @@ Return JSON with this exact shape:
       metadata: { stage: 'packet-building' },
     };
 
-    const response = await this.llm.completeJson<Omit<ResearchPacket, 'claims' | 'webSources'>>(config, request);
+    const response = await this.llm.completeJson<
+      Omit<ResearchPacket, 'claims' | 'webSources'>
+    >(config, request);
 
     return {
       ...response.result,
@@ -1487,7 +1618,10 @@ Return JSON with this exact shape:
     };
   }
 
-  async buildPacketFromKnowledge(question: string, config: LlmConfig): Promise<ResearchPacket> {
+  async buildPacketFromKnowledge(
+    question: string,
+    config: LlmConfig,
+  ): Promise<ResearchPacket> {
     const request: LlmRequest = {
       system: `You are a research analyst. Given an engineering question, produce a comprehensive research packet using your training knowledge.
 
@@ -1513,14 +1647,21 @@ Be thorough. Include at least 3 options, 5+ evaluation criteria, and 10+ claims.
       metadata: { stage: 'packet-building-knowledge' },
     };
 
-    return (await this.llm.completeJson<ResearchPacket>(config, request)).result;
+    return (await this.llm.completeJson<ResearchPacket>(config, request))
+      .result;
   }
 
   private inferSourceType(url: string): Source['type'] {
     if (url.includes('github.com')) return 'docs';
     if (url.includes('benchmark') || url.includes('perf')) return 'benchmark';
-    if (url.includes('reddit.com') || url.includes('stackoverflow')) return 'forum';
-    if (url.includes('blog') || url.includes('medium.com') || url.includes('dev.to')) return 'blog';
+    if (url.includes('reddit.com') || url.includes('stackoverflow'))
+      return 'forum';
+    if (
+      url.includes('blog') ||
+      url.includes('medium.com') ||
+      url.includes('dev.to')
+    )
+      return 'blog';
     return 'other';
   }
 }
@@ -1529,9 +1670,14 @@ Be thorough. Include at least 3 options, 5+ evaluation criteria, and 10+ claims.
 - [ ] **Step 4: Create ResearchService (orchestrates the 3 layers)**
 
 `apps/agent-backend/src/research/research.service.ts`:
+
 ```typescript
 import { Injectable, Logger } from '@nestjs/common';
-import { LlmConfig, SearchConfig, ResearchPacket } from '@consensus-lab/shared-types';
+import {
+  LlmConfig,
+  SearchConfig,
+  ResearchPacket,
+} from '@consensus-lab/shared-types';
 import { SearchProviderService } from './search-provider.service';
 import { ResearchExtractionService } from './research-extraction.service';
 import { PacketBuilderService } from './packet-builder.service';
@@ -1565,10 +1711,19 @@ export class ResearchService {
     }
 
     this.logger.log(`Extracting claims from ${rawResults.length} results...`);
-    const claims = await this.extraction.extractClaims(question, rawResults, llmConfig);
+    const claims = await this.extraction.extractClaims(
+      question,
+      rawResults,
+      llmConfig,
+    );
 
     this.logger.log(`Building packet from ${claims.length} claims...`);
-    return this.packetBuilder.buildPacket(question, claims, rawResults, llmConfig);
+    return this.packetBuilder.buildPacket(
+      question,
+      claims,
+      rawResults,
+      llmConfig,
+    );
   }
 }
 ```
@@ -1576,6 +1731,7 @@ export class ResearchService {
 - [ ] **Step 5: Create ResearchModule**
 
 `apps/agent-backend/src/research/research.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { LlmModule } from '../llm/llm.module';
@@ -1586,7 +1742,12 @@ import { PacketBuilderService } from './packet-builder.service';
 
 @Module({
   imports: [LlmModule],
-  providers: [ResearchService, SearchProviderService, ResearchExtractionService, PacketBuilderService],
+  providers: [
+    ResearchService,
+    SearchProviderService,
+    ResearchExtractionService,
+    PacketBuilderService,
+  ],
   exports: [ResearchService],
 })
 export class ResearchModule {}
@@ -1606,6 +1767,7 @@ git commit -m "feat(backend): add ResearchModule with search, extraction, and pa
 Config-driven specialist agents with analyze and rebut methods.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/agents/agent-configs.ts`
 - Create: `apps/agent-backend/src/agents/agent-runner.service.ts`
 - Create: `apps/agent-backend/src/agents/agents.module.ts`
@@ -1613,6 +1775,7 @@ Config-driven specialist agents with analyze and rebut methods.
 - [ ] **Step 1: Create agent configs**
 
 `apps/agent-backend/src/agents/agent-configs.ts`:
+
 ```typescript
 import { AgentConfig } from '@consensus-lab/shared-types';
 
@@ -1719,6 +1882,7 @@ When analyzing a research packet, you MUST return valid JSON with this exact sha
 - [ ] **Step 2: Create AgentRunnerService**
 
 `apps/agent-backend/src/agents/agent-runner.service.ts`:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { LlmService, LlmRequest } from '../llm/llm.service';
@@ -1747,7 +1911,10 @@ export class AgentRunnerService {
       metadata: { stage: 'agent-analysis', agentId: agentConfig.agentId },
     };
 
-    const response = await this.llm.completeJson<AgentAnalysis>(llmConfig, request);
+    const response = await this.llm.completeJson<AgentAnalysis>(
+      llmConfig,
+      request,
+    );
     return {
       ...response.result,
       agentId: agentConfig.agentId,
@@ -1787,7 +1954,10 @@ Return valid JSON:
       metadata: { stage: 'agent-rebuttal', agentId: agentConfig.agentId },
     };
 
-    const response = await this.llm.completeJson<RebuttalResponse>(llmConfig, request);
+    const response = await this.llm.completeJson<RebuttalResponse>(
+      llmConfig,
+      request,
+    );
     return {
       ...response.result,
       agentId: agentConfig.agentId,
@@ -1800,6 +1970,7 @@ Return valid JSON:
 - [ ] **Step 3: Create AgentsModule**
 
 `apps/agent-backend/src/agents/agents.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { LlmModule } from '../llm/llm.module';
@@ -1827,12 +1998,14 @@ git commit -m "feat(backend): add AgentsModule with config-driven specialist age
 Disagreement detection, challenge generation, and verdict synthesis.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/judge/judge.service.ts`
 - Create: `apps/agent-backend/src/judge/judge.module.ts`
 
 - [ ] **Step 1: Create JudgeService**
 
 `apps/agent-backend/src/judge/judge.service.ts`:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { LlmService, LlmRequest } from '../llm/llm.service';
@@ -1885,7 +2058,8 @@ Make challenge prompts specific and targeted. Do not ask generic questions. Refe
       metadata: { stage: 'judge-review' },
     };
 
-    return (await this.llm.completeJson<JudgeReviewResult>(llmConfig, request)).result;
+    return (await this.llm.completeJson<JudgeReviewResult>(llmConfig, request))
+      .result;
   }
 
   async synthesize(
@@ -1935,6 +2109,7 @@ Be nuanced. If the answer is genuinely context-dependent, say so.`,
 - [ ] **Step 2: Create JudgeModule**
 
 `apps/agent-backend/src/judge/judge.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { LlmModule } from '../llm/llm.module';
@@ -1962,12 +2137,14 @@ git commit -m "feat(backend): add JudgeModule with review and verdict synthesis"
 The state machine that drives the full pipeline.
 
 **Files:**
+
 - Create: `apps/agent-backend/src/orchestration/orchestration.service.ts`
 - Create: `apps/agent-backend/src/orchestration/orchestration.module.ts`
 
 - [ ] **Step 1: Create OrchestrationService**
 
 `apps/agent-backend/src/orchestration/orchestration.service.ts`:
+
 ```typescript
 import { Injectable, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
@@ -2003,97 +2180,150 @@ export class OrchestrationService {
     this.cancelledSessions.add(sessionId);
   }
 
-  async run(sessionId: string, llmConfig: LlmConfig, searchConfig?: SearchConfig): Promise<void> {
+  async run(
+    sessionId: string,
+    llmConfig: LlmConfig,
+    searchConfig?: SearchConfig,
+  ): Promise<void> {
     try {
       this.emitEvent(sessionId, 'question_received');
 
       // Stage: RESEARCHING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'RESEARCHING', async () => {
-        this.emitEvent(sessionId, 'research_started');
-        const packet = await this.researchService.research(
-          this.sessionRepo.getById(sessionId)!.question,
-          llmConfig,
-          searchConfig,
-        );
-        this.sessionRepo.saveResearchPacket(sessionId, packet);
-        this.emitEvent(sessionId, 'packet_completed');
-      }, llmConfig);
+      await this.runStage(
+        sessionId,
+        'RESEARCHING',
+        async () => {
+          this.emitEvent(sessionId, 'research_started');
+          const packet = await this.researchService.research(
+            this.sessionRepo.getById(sessionId)!.question,
+            llmConfig,
+            searchConfig,
+          );
+          this.sessionRepo.saveResearchPacket(sessionId, packet);
+          this.emitEvent(sessionId, 'packet_completed');
+        },
+        llmConfig,
+      );
 
       // Stage: AGENTS_ANALYZING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'AGENTS_ANALYZING', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
-        const analyses = await runWithConcurrency(
-          SPECIALIST_AGENTS.map((config) => async () => {
-            this.emitEvent(sessionId, 'agent_started', config.agentId);
-            const analysis = await this.agentRunner.analyze(config, session.researchPacket!, llmConfig);
-            this.emitEvent(sessionId, 'agent_analysis_completed', config.agentId, { analysis });
-            return analysis;
-          }),
-          4,
-        );
-        this.sessionRepo.saveAnalyses(sessionId, analyses);
-      }, llmConfig);
+      await this.runStage(
+        sessionId,
+        'AGENTS_ANALYZING',
+        async () => {
+          const session = this.sessionRepo.getById(sessionId)!;
+          const analyses = await runWithConcurrency(
+            SPECIALIST_AGENTS.map((config) => async () => {
+              this.emitEvent(sessionId, 'agent_started', config.agentId);
+              const analysis = await this.agentRunner.analyze(
+                config,
+                session.researchPacket!,
+                llmConfig,
+              );
+              this.emitEvent(
+                sessionId,
+                'agent_analysis_completed',
+                config.agentId,
+                { analysis },
+              );
+              return analysis;
+            }),
+            4,
+          );
+          this.sessionRepo.saveAnalyses(sessionId, analyses);
+        },
+        llmConfig,
+      );
 
       // Stage: JUDGE_REVIEWING
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'JUDGE_REVIEWING', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
-        this.emitEvent(sessionId, 'judge_review_started');
-        const { disagreements, challengePrompts } = await this.judgeService.review(
-          session.researchPacket!,
-          session.analyses,
-          llmConfig,
-        );
-        this.sessionRepo.saveDisagreements(sessionId, disagreements);
-        this.sessionRepo.saveChallengePrompts(sessionId, challengePrompts);
-        for (const d of disagreements) {
-          this.emitEvent(sessionId, 'disagreement_found', undefined, { disagreement: d });
-        }
-        for (const c of challengePrompts) {
-          this.emitEvent(sessionId, 'challenge_issued', undefined, { challenge: c });
-        }
-      }, llmConfig);
+      await this.runStage(
+        sessionId,
+        'JUDGE_REVIEWING',
+        async () => {
+          const session = this.sessionRepo.getById(sessionId)!;
+          this.emitEvent(sessionId, 'judge_review_started');
+          const { disagreements, challengePrompts } =
+            await this.judgeService.review(
+              session.researchPacket!,
+              session.analyses,
+              llmConfig,
+            );
+          this.sessionRepo.saveDisagreements(sessionId, disagreements);
+          this.sessionRepo.saveChallengePrompts(sessionId, challengePrompts);
+          for (const d of disagreements) {
+            this.emitEvent(sessionId, 'disagreement_found', undefined, {
+              disagreement: d,
+            });
+          }
+          for (const c of challengePrompts) {
+            this.emitEvent(sessionId, 'challenge_issued', undefined, {
+              challenge: c,
+            });
+          }
+        },
+        llmConfig,
+      );
 
       // Stage: REBUTTAL_ROUND
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'REBUTTAL_ROUND', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
-        const challengedAgentIds = new Set(session.challengePrompts.flatMap((c) => c.targetAgentIds));
-        const rebuttals = await runWithConcurrency(
-          SPECIALIST_AGENTS.filter((a) => challengedAgentIds.has(a.agentId)).map((config) => async () => {
-            const challenge = session.challengePrompts.find((c) => c.targetAgentIds.includes(config.agentId))!;
-            const originalAnalysis = session.analyses.find((a) => a.agentId === config.agentId)!;
-            const rebuttal = await this.agentRunner.rebut(
-              config,
-              session.researchPacket!,
-              challenge,
-              originalAnalysis,
-              llmConfig,
-            );
-            this.emitEvent(sessionId, 'rebuttal_completed', config.agentId, { rebuttal });
-            return rebuttal;
-          }),
-          4,
-        );
-        this.sessionRepo.saveRebuttals(sessionId, rebuttals);
-      }, llmConfig);
+      await this.runStage(
+        sessionId,
+        'REBUTTAL_ROUND',
+        async () => {
+          const session = this.sessionRepo.getById(sessionId)!;
+          const challengedAgentIds = new Set(
+            session.challengePrompts.flatMap((c) => c.targetAgentIds),
+          );
+          const rebuttals = await runWithConcurrency(
+            SPECIALIST_AGENTS.filter((a) =>
+              challengedAgentIds.has(a.agentId),
+            ).map((config) => async () => {
+              const challenge = session.challengePrompts.find((c) =>
+                c.targetAgentIds.includes(config.agentId),
+              )!;
+              const originalAnalysis = session.analyses.find(
+                (a) => a.agentId === config.agentId,
+              )!;
+              const rebuttal = await this.agentRunner.rebut(
+                config,
+                session.researchPacket!,
+                challenge,
+                originalAnalysis,
+                llmConfig,
+              );
+              this.emitEvent(sessionId, 'rebuttal_completed', config.agentId, {
+                rebuttal,
+              });
+              return rebuttal;
+            }),
+            4,
+          );
+          this.sessionRepo.saveRebuttals(sessionId, rebuttals);
+        },
+        llmConfig,
+      );
 
       // Stage: FINAL_VERDICT
       if (this.isCancelled(sessionId)) return this.finishCancelled(sessionId);
-      await this.runStage(sessionId, 'FINAL_VERDICT', async () => {
-        const session = this.sessionRepo.getById(sessionId)!;
-        const verdict = await this.judgeService.synthesize(
-          session.researchPacket!,
-          session.analyses,
-          session.rebuttals,
-          session.disagreements,
-          llmConfig,
-        );
-        this.sessionRepo.saveVerdict(sessionId, verdict);
-        this.emitEvent(sessionId, 'verdict_completed');
-      }, llmConfig);
+      await this.runStage(
+        sessionId,
+        'FINAL_VERDICT',
+        async () => {
+          const session = this.sessionRepo.getById(sessionId)!;
+          const verdict = await this.judgeService.synthesize(
+            session.researchPacket!,
+            session.analyses,
+            session.rebuttals,
+            session.disagreements,
+            llmConfig,
+          );
+          this.sessionRepo.saveVerdict(sessionId, verdict);
+          this.emitEvent(sessionId, 'verdict_completed');
+        },
+        llmConfig,
+      );
 
       // COMPLETE
       this.sessionRepo.updateStatus(sessionId, 'COMPLETE');
@@ -2103,7 +2333,6 @@ export class OrchestrationService {
         sessionId,
         data: { sessionId, finalStatus: 'COMPLETE' },
       });
-
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Pipeline failed for session ${sessionId}: ${message}`);
@@ -2184,7 +2413,11 @@ export class OrchestrationService {
     this.eventBus.emit({ type: 'session.event', sessionId, data: event });
   }
 
-  private emitStateChanged(sessionId: string, state: PipelineState, previousState: PipelineState): void {
+  private emitStateChanged(
+    sessionId: string,
+    state: PipelineState,
+    previousState: PipelineState,
+  ): void {
     this.eventBus.emit({
       type: 'session.state_changed',
       sessionId,
@@ -2197,6 +2430,7 @@ export class OrchestrationService {
 - [ ] **Step 2: Create OrchestrationModule**
 
 `apps/agent-backend/src/orchestration/orchestration.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { ResearchModule } from '../research/research.module';
@@ -2227,6 +2461,7 @@ git commit -m "feat(backend): add OrchestrationModule with full pipeline state m
 Connect all modules into AppModule, update main.ts with CORS and ValidationPipe, wire orchestration into session creation.
 
 **Files:**
+
 - Modify: `apps/agent-backend/src/app/app.module.ts`
 - Modify: `apps/agent-backend/src/app/app.controller.ts`
 - Modify: `apps/agent-backend/src/main.ts`
@@ -2236,6 +2471,7 @@ Connect all modules into AppModule, update main.ts with CORS and ValidationPipe,
 - [ ] **Step 1: Update AppModule to import all feature modules**
 
 `apps/agent-backend/src/app/app.module.ts`:
+
 ```typescript
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -2265,6 +2501,7 @@ export class AppModule {}
 - [ ] **Step 2: Update AppController to be a health endpoint**
 
 `apps/agent-backend/src/app/app.controller.ts`:
+
 ```typescript
 import { Controller, Get } from '@nestjs/common';
 
@@ -2284,6 +2521,7 @@ Delete `apps/agent-backend/src/app/app.service.ts` — no longer needed.
 - [ ] **Step 4: Update main.ts with CORS and ValidationPipe**
 
 `apps/agent-backend/src/main.ts`:
+
 ```typescript
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -2297,7 +2535,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   const port = process.env['PORT'] || 3000;
   await app.listen(port);
-  Logger.log(`Application is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(
+    `Application is running on: http://localhost:${port}/${globalPrefix}`,
+  );
 }
 
 bootstrap();
@@ -2310,17 +2550,20 @@ Add to `apps/agent-backend/src/session/session.controller.ts` — inject Orchest
 In the constructor, add `private readonly orchestration: OrchestrationService` (import from `'../orchestration/orchestration.service'`).
 
 In the `createSession` method, after `this.sessionRepo.create(session)`, add:
+
 ```typescript
 // Fire and forget — orchestration runs in the background
 this.orchestration.run(session.id, dto.llmConfig, dto.searchConfig);
 ```
 
 In the `cancelSession` method, before updating the repo, add:
+
 ```typescript
 this.orchestration.cancelSession(id);
 ```
 
 Update `SessionModule` to import `OrchestrationModule`:
+
 ```typescript
 import { Module, forwardRef } from '@nestjs/common';
 import { SessionController } from './session.controller';
@@ -2337,6 +2580,7 @@ export class SessionModule {}
 ```
 
 And update `OrchestrationModule` to use `forwardRef` for SessionModule:
+
 ```typescript
 import { Module, forwardRef } from '@nestjs/common';
 import { ResearchModule } from '../research/research.module';
@@ -2346,7 +2590,12 @@ import { SessionModule } from '../session/session.module';
 import { OrchestrationService } from './orchestration.service';
 
 @Module({
-  imports: [ResearchModule, AgentsModule, JudgeModule, forwardRef(() => SessionModule)],
+  imports: [
+    ResearchModule,
+    AgentsModule,
+    JudgeModule,
+    forwardRef(() => SessionModule),
+  ],
   providers: [OrchestrationService],
   exports: [OrchestrationService],
 })
@@ -2372,21 +2621,27 @@ git commit -m "feat(backend): wire all modules together, add CORS, ValidationPip
 Set up the SCSS design tokens, fonts, and ambient background.
 
 **Files:**
+
 - Modify: `apps/agent-frontend/src/styles.css` (rename to .scss or use CSS custom properties)
 - Modify: `apps/agent-frontend/src/index.html` — add font imports
 
 - [ ] **Step 1: Add font links to index.html**
 
 Add to `<head>` in `apps/agent-frontend/src/index.html`:
+
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 - [ ] **Step 2: Replace styles.css with design token system**
 
 `apps/agent-frontend/src/styles.css`:
+
 ```css
 /* === Consensus Lab Design Tokens === */
 :root {
@@ -2460,9 +2715,21 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(76, 201, 240, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(155, 92, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(54, 211, 153, 0.02) 0%, transparent 50%);
+    radial-gradient(
+      ellipse at 20% 50%,
+      rgba(76, 201, 240, 0.04) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(155, 92, 255, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 50% 80%,
+      rgba(54, 211, 153, 0.02) 0%,
+      transparent 50%
+    );
 }
 
 /* === Faint Grid === */
@@ -2543,6 +2810,7 @@ git commit -m "feat(frontend): add design token system, fonts, ambient backgroun
 Create all Angular services: settings, HTTP session, SSE, and reactive state.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/services/settings.service.ts`
 - Create: `apps/agent-frontend/src/app/services/session.service.ts`
 - Create: `apps/agent-frontend/src/app/services/sse.service.ts`
@@ -2552,6 +2820,7 @@ Create all Angular services: settings, HTTP session, SSE, and reactive state.
 - [ ] **Step 1: Update app.config.ts to add HttpClient**
 
 `apps/agent-frontend/src/app/app.config.ts`:
+
 ```typescript
 import {
   ApplicationConfig,
@@ -2573,6 +2842,7 @@ export const appConfig: ApplicationConfig = {
 - [ ] **Step 2: Create SettingsService**
 
 `apps/agent-frontend/src/app/services/settings.service.ts`:
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { LlmConfig, SearchConfig } from '@consensus-lab/shared-types';
@@ -2609,6 +2879,7 @@ export class SettingsService {
 - [ ] **Step 3: Create SessionService (HTTP)**
 
 `apps/agent-frontend/src/app/services/session.service.ts`:
+
 ```typescript
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -2626,7 +2897,10 @@ export class SessionService {
   private readonly baseUrl = 'http://localhost:3000/api';
 
   create(request: CreateSessionRequest): Observable<CreateSessionResponse> {
-    return this.http.post<CreateSessionResponse>(`${this.baseUrl}/sessions`, request);
+    return this.http.post<CreateSessionResponse>(
+      `${this.baseUrl}/sessions`,
+      request,
+    );
   }
 
   list(): Observable<SessionListItem[]> {
@@ -2638,7 +2912,10 @@ export class SessionService {
   }
 
   cancel(id: string): Observable<{ status: string }> {
-    return this.http.post<{ status: string }>(`${this.baseUrl}/sessions/${id}/cancel`, {});
+    return this.http.post<{ status: string }>(
+      `${this.baseUrl}/sessions/${id}/cancel`,
+      {},
+    );
   }
 }
 ```
@@ -2646,10 +2923,17 @@ export class SessionService {
 - [ ] **Step 4: Create SseService**
 
 `apps/agent-frontend/src/app/services/sse.service.ts`:
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SseStateChanged, SseStageMetadata, SseDone, SseHeartbeat, SessionEvent } from '@consensus-lab/shared-types';
+import {
+  SseStateChanged,
+  SseStageMetadata,
+  SseDone,
+  SseHeartbeat,
+  SessionEvent,
+} from '@consensus-lab/shared-types';
 
 export type SseMessage =
   | { type: 'session.event'; data: SessionEvent }
@@ -2697,6 +2981,7 @@ export class SseService {
 - [ ] **Step 5: Create SessionStateService**
 
 `apps/agent-frontend/src/app/services/session-state.service.ts`:
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
@@ -2728,7 +3013,13 @@ export class SessionStateService {
     return this.sessionSubject.value;
   }
 
-  initSession(session: Partial<Session> & { id: string; question: string; createdAt: string }): void {
+  initSession(
+    session: Partial<Session> & {
+      id: string;
+      question: string;
+      createdAt: string;
+    },
+  ): void {
     this.sessionSubject.next({
       status: 'IDLE',
       analyses: [],
@@ -2758,7 +3049,10 @@ export class SessionStateService {
         break;
       case 'session.stage_metadata':
         this.update({
-          stageMetadata: [...session.stageMetadata, message.data as unknown as StageMetadata],
+          stageMetadata: [
+            ...session.stageMetadata,
+            message.data as unknown as StageMetadata,
+          ],
         });
         break;
       case 'session.done':
@@ -2777,17 +3071,35 @@ export class SessionStateService {
     const events = [...session.events, event];
     const updates: Partial<Session> = { events };
 
-    if (event.type === 'agent_analysis_completed' && event.payload?.['analysis']) {
-      updates.analyses = [...session.analyses, event.payload['analysis'] as AgentAnalysis];
+    if (
+      event.type === 'agent_analysis_completed' &&
+      event.payload?.['analysis']
+    ) {
+      updates.analyses = [
+        ...session.analyses,
+        event.payload['analysis'] as AgentAnalysis,
+      ];
     }
-    if (event.type === 'disagreement_found' && event.payload?.['disagreement']) {
-      updates.disagreements = [...session.disagreements, event.payload['disagreement'] as Disagreement];
+    if (
+      event.type === 'disagreement_found' &&
+      event.payload?.['disagreement']
+    ) {
+      updates.disagreements = [
+        ...session.disagreements,
+        event.payload['disagreement'] as Disagreement,
+      ];
     }
     if (event.type === 'challenge_issued' && event.payload?.['challenge']) {
-      updates.challengePrompts = [...session.challengePrompts, event.payload['challenge'] as ChallengePrompt];
+      updates.challengePrompts = [
+        ...session.challengePrompts,
+        event.payload['challenge'] as ChallengePrompt,
+      ];
     }
     if (event.type === 'rebuttal_completed' && event.payload?.['rebuttal']) {
-      updates.rebuttals = [...session.rebuttals, event.payload['rebuttal'] as RebuttalResponse];
+      updates.rebuttals = [
+        ...session.rebuttals,
+        event.payload['rebuttal'] as RebuttalResponse,
+      ];
     }
     if (event.type === 'verdict_completed' && event.payload?.['verdict']) {
       updates.verdict = event.payload['verdict'] as Verdict;
@@ -2828,6 +3140,7 @@ git commit -m "feat(frontend): add services (settings, session HTTP, SSE, reacti
 The top-level app shell with control bar and landing view question input.
 
 **Files:**
+
 - Modify: `apps/agent-frontend/src/app/app.ts`
 - Modify: `apps/agent-frontend/src/app/app.html`
 - Modify: `apps/agent-frontend/src/app/app.css`
@@ -2872,6 +3185,7 @@ git commit -m "feat(frontend): add app shell, control bar, question input, setti
 The 4-column grid shell and the mission launcher column.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view.ts`
 - Create: `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view.html`
 - Create: `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view.css`
@@ -2913,6 +3227,7 @@ git commit -m "feat(frontend): add deliberation view grid, pipeline status rail,
 Source cards, claim cards, and gaps display.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/research-packet-panel/research-packet-panel.ts`
 - Create: `apps/agent-frontend/src/app/components/research-packet-panel/research-packet-panel.html`
 - Create: `apps/agent-frontend/src/app/components/research-packet-panel/research-packet-panel.css`
@@ -2949,6 +3264,7 @@ git commit -m "feat(frontend): add research packet panel with source and claim c
 The specialist station cards with confidence rings and rebuttal badges.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/agent-card/agent-card.ts`
 - Create: `apps/agent-frontend/src/app/components/agent-card/agent-card.html`
 - Create: `apps/agent-frontend/src/app/components/agent-card/agent-card.css`
@@ -2975,6 +3291,7 @@ git commit -m "feat(frontend): add agent card with confidence ring and rebuttal 
 Disagreement cards, challenge directives, and the verdict panel.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/judge-panel/judge-panel.ts`
 - Create: `apps/agent-frontend/src/app/components/judge-panel/judge-panel.html`
 - Create: `apps/agent-frontend/src/app/components/judge-panel/judge-panel.css`
@@ -3011,6 +3328,7 @@ git commit -m "feat(frontend): add judge panel, disagreement cards, and verdict 
 The animated DAG visualization using @swimlane/ngx-graph.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/pipeline-graph/pipeline-graph.ts`
 - Create: `apps/agent-frontend/src/app/components/pipeline-graph/pipeline-graph.html`
 - Create: `apps/agent-frontend/src/app/components/pipeline-graph/pipeline-graph.css`
@@ -3041,6 +3359,7 @@ git commit -m "feat(frontend): add animated pipeline graph with custom node/edge
 Past sessions sidebar/modal.
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/session-history/session-history.ts`
 - Create: `apps/agent-frontend/src/app/components/session-history/session-history.html`
 - Create: `apps/agent-frontend/src/app/components/session-history/session-history.css`
@@ -3063,12 +3382,14 @@ git commit -m "feat(frontend): add session history panel"
 Verify the full pipeline works with both apps running.
 
 **Files:**
+
 - Modify: `e2e/agent-backend-e2e/src/agent-backend/agent-backend.spec.ts`
 - Modify: `apps/agent-frontend/src/app/app.spec.ts`
 
 - [ ] **Step 1: Update backend e2e test**
 
 `e2e/agent-backend-e2e/src/agent-backend/agent-backend.spec.ts`:
+
 ```typescript
 import axios from 'axios';
 
@@ -3106,6 +3427,7 @@ git commit -m "test: update e2e tests for Consensus Lab endpoints"
 Update environment documentation for the new config approach.
 
 **Files:**
+
 - Modify: `.example.env`
 - Modify: `CLAUDE.md` (if needed)
 

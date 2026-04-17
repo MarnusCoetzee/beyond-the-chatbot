@@ -10,7 +10,11 @@ jest.mock('openai', () => {
         completions: {
           create: jest.fn().mockResolvedValue({
             choices: [{ message: { content: 'test response' } }],
-            usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+            usage: {
+              prompt_tokens: 10,
+              completion_tokens: 5,
+              total_tokens: 15,
+            },
           }),
         },
       },
@@ -53,7 +57,11 @@ describe('LlmService', () => {
         completions: {
           create: jest.fn().mockResolvedValue({
             choices: [{ message: { content: '{"name":"test"}' } }],
-            usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+            usage: {
+              prompt_tokens: 10,
+              completion_tokens: 5,
+              total_tokens: 15,
+            },
           }),
         },
       },
@@ -74,14 +82,20 @@ describe('LlmService', () => {
           completions: {
             create: jest.fn().mockResolvedValue({
               choices: [{ message: { content: 'hello world' } }],
-              usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+              usage: {
+                prompt_tokens: 10,
+                completion_tokens: 5,
+                total_tokens: 15,
+              },
             }),
           },
         },
       }));
 
       const save = jest.fn();
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const traceRepo = {
+        save,
+      } as unknown as import('../session/trace.repository').TraceRepository;
       const service = new (await import('./llm.service')).LlmService(traceRepo);
 
       await service.complete(
@@ -118,7 +132,9 @@ describe('LlmService', () => {
       }));
 
       const save = jest.fn();
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const traceRepo = {
+        save,
+      } as unknown as import('../session/trace.repository').TraceRepository;
       const service = new (await import('./llm.service')).LlmService(traceRepo);
 
       await service.completeJson(
@@ -145,7 +161,9 @@ describe('LlmService', () => {
       }));
 
       const save = jest.fn();
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const traceRepo = {
+        save,
+      } as unknown as import('../session/trace.repository').TraceRepository;
       const service = new (await import('./llm.service')).LlmService(traceRepo);
 
       await service.complete(testConfig, { system: 'sys', user: 'usr' });
@@ -168,7 +186,9 @@ describe('LlmService', () => {
       const save = jest.fn().mockImplementation(() => {
         throw new Error('db down');
       });
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
+      const traceRepo = {
+        save,
+      } as unknown as import('../session/trace.repository').TraceRepository;
       const service = new (await import('./llm.service')).LlmService(traceRepo);
 
       await expect(

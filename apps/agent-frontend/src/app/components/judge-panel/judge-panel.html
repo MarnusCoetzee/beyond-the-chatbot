@@ -1,34 +1,29 @@
-@if (isReviewing || sessionState.currentSession?.verdict) {
-  @if (sessionState.currentSession?.disagreements?.length) {
-    <div class="section">
-      <h3 class="label">Disagreements</h3>
-      @for (d of sessionState.currentSession!.disagreements; track d.topic) {
-        <app-disagreement-card [disagreement]="d" />
-      }
-    </div>
+@if (isReviewing || sessionState.currentSession?.verdict) { @if
+(sessionState.currentSession?.disagreements?.length) {
+<div class="section">
+  <h3 class="label">Disagreements</h3>
+  @for (d of sessionState.currentSession!.disagreements; track d.topic) {
+  <app-disagreement-card [disagreement]="d" />
   }
-
-  @if (sessionState.currentSession?.challengePrompts?.length) {
-    <div class="section">
-      <h3 class="label">Challenges Issued</h3>
-      @for (c of sessionState.currentSession!.challengePrompts; track c.id) {
-        <div class="challenge-card card">
-          <p class="challenge-target mono">→ {{ c.targetAgentIds.join(', ') }}</p>
-          <p class="challenge-prompt">{{ c.prompt }}</p>
-        </div>
-      }
-    </div>
-  }
-
-  @if (sessionState.currentSession?.verdict) {
-    <app-verdict-card [verdict]="sessionState.currentSession!.verdict!" />
-  } @else if (sessionState.currentSession?.status === 'FINAL_VERDICT') {
-    <div class="synthesizing">
-      <p class="mono">Synthesizing verdict...</p>
-    </div>
-  }
-} @else {
-  <div class="empty-state">
-    <p class="mono">Waiting for judge review</p>
+</div>
+} @if (sessionState.currentSession?.challengePrompts?.length) {
+<div class="section">
+  <h3 class="label">Challenges Issued</h3>
+  @for (c of sessionState.currentSession!.challengePrompts; track c.id) {
+  <div class="challenge-card card">
+    <p class="challenge-target mono">→ {{ c.targetAgentIds.join(', ') }}</p>
+    <p class="challenge-prompt">{{ c.prompt }}</p>
   </div>
+  }
+</div>
+} @if (sessionState.currentSession?.verdict) {
+<app-verdict-card [verdict]="sessionState.currentSession!.verdict!" />
+} @else if (sessionState.currentSession?.status === 'FINAL_VERDICT') {
+<div class="synthesizing">
+  <p class="mono">Synthesizing verdict...</p>
+</div>
+} } @else {
+<div class="empty-state">
+  <p class="mono">Waiting for judge review</p>
+</div>
 }

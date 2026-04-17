@@ -9,6 +9,8 @@ export class TraceService {
   private readonly baseUrl = 'http://localhost:3000/api';
 
   getBySession(sessionId: string): Observable<LlmTrace[]> {
-    return this.http.get<LlmTrace[]>(`${this.baseUrl}/sessions/${sessionId}/traces`);
+    return this.http.get<LlmTrace[]>(
+      `${this.baseUrl}/sessions/${sessionId}/traces`,
+    );
   }
 }

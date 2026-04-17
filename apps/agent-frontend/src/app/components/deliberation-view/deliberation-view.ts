@@ -1,4 +1,11 @@
-import { Component, inject, ChangeDetectorRef, OnInit, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  inject,
+  ChangeDetectorRef,
+  OnInit,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import type { RebuttalResponse } from '@consensus-lab/shared-types';
@@ -14,7 +21,16 @@ import { ReplayTimelineComponent } from '../replay-timeline/replay-timeline';
 @Component({
   selector: 'app-deliberation-view',
   standalone: true,
-  imports: [CommonModule, PipelineStatusComponent, TelemetryStripComponent, ResearchPacketPanelComponent, AgentCardComponent, JudgePanelComponent, PipelineGraphComponent, ReplayTimelineComponent],
+  imports: [
+    CommonModule,
+    PipelineStatusComponent,
+    TelemetryStripComponent,
+    ResearchPacketPanelComponent,
+    AgentCardComponent,
+    JudgePanelComponent,
+    PipelineGraphComponent,
+    ReplayTimelineComponent,
+  ],
   templateUrl: './deliberation-view.html',
   styleUrl: './deliberation-view.css',
 })
@@ -39,7 +55,8 @@ export class DeliberationViewComponent implements OnInit, OnDestroy {
     if (!status) return 0;
     if (['IDLE', 'RESEARCHING', 'PACKET_READY'].includes(status)) return 1;
     if (['AGENTS_ANALYZING'].includes(status)) return 2;
-    if (['JUDGE_REVIEWING', 'REBUTTAL_ROUND', 'FINAL_VERDICT'].includes(status)) return 3;
+    if (['JUDGE_REVIEWING', 'REBUTTAL_ROUND', 'FINAL_VERDICT'].includes(status))
+      return 3;
     return 0;
   }
 
@@ -52,6 +69,8 @@ export class DeliberationViewComponent implements OnInit, OnDestroy {
   }
 
   getRebuttal(agentId: string): RebuttalResponse | undefined {
-    return this.sessionState.currentSession?.rebuttals.find((r) => r.agentId === agentId);
+    return this.sessionState.currentSession?.rebuttals.find(
+      (r) => r.agentId === agentId,
+    );
   }
 }

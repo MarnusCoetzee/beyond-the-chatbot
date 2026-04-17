@@ -1,4 +1,9 @@
-<button type="button" class="overlay" aria-label="Close session history" (click)="closed.emit()"></button>
+<button
+  type="button"
+  class="overlay"
+  aria-label="Close session history"
+  (click)="closed.emit()"
+></button>
 <div class="history-panel glass-panel">
   <div class="panel-header">
     <h2>Session History</h2>
@@ -6,35 +11,44 @@
   </div>
 
   @if (loading) {
-    <div class="loading">
-      <p class="mono">Loading sessions...</p>
-    </div>
+  <div class="loading">
+    <p class="mono">Loading sessions...</p>
+  </div>
   } @else if (sessions.length === 0) {
-    <div class="empty">
-      <p class="mono">No sessions yet</p>
-    </div>
+  <div class="empty">
+    <p class="mono">No sessions yet</p>
+  </div>
   } @else {
-    <div class="session-list">
-      @for (session of sessions; track session.id) {
-        <div class="session-row">
-          <button class="session-item" (click)="loadSession(session.id)">
-            <div class="item-top">
-              <span class="status-dot" [class]="getStatusClass(session.status)"></span>
-              <span class="question-text">{{ truncate(session.question, 60) }}</span>
-            </div>
-            <div class="item-meta mono">
-              <span>{{ session.status }}</span>
-              <span>{{ formatDuration(session.durationMs) }}</span>
-            </div>
-          </button>
-
-          @if (session.status === 'COMPLETE') {
-            <a class="replay-link" [routerLink]="['/sessions', session.id, 'replay']" (click)="closed.emit()">
-              Replay
-            </a>
-          }
+  <div class="session-list">
+    @for (session of sessions; track session.id) {
+    <div class="session-row">
+      <button class="session-item" (click)="loadSession(session.id)">
+        <div class="item-top">
+          <span
+            class="status-dot"
+            [class]="getStatusClass(session.status)"
+          ></span>
+          <span class="question-text"
+            >{{ truncate(session.question, 60) }}</span
+          >
         </div>
+        <div class="item-meta mono">
+          <span>{{ session.status }}</span>
+          <span>{{ formatDuration(session.durationMs) }}</span>
+        </div>
+      </button>
+
+      @if (session.status === 'COMPLETE') {
+      <a
+        class="replay-link"
+        [routerLink]="['/sessions', session.id, 'replay']"
+        (click)="closed.emit()"
+      >
+        Replay
+      </a>
       }
     </div>
+    }
+  </div>
   }
 </div>

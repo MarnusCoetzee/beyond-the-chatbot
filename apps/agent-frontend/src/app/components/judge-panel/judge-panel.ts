@@ -16,6 +16,8 @@ export class JudgePanelComponent {
 
   get isReviewing() {
     const s = this.sessionState.currentSession?.status;
-    return s === 'JUDGE_REVIEWING' || s === 'REBUTTAL_ROUND' || s === 'FINAL_VERDICT';
+    return (
+      s === 'JUDGE_REVIEWING' || s === 'REBUTTAL_ROUND' || s === 'FINAL_VERDICT'
+    );
   }
 }

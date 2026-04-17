@@ -7,14 +7,14 @@
   <h2 class="primary-rec">{{ verdict.primaryRecommendation }}</h2>
 
   @if (verdict.ranking?.length) {
-    <div class="ranking">
-      <span class="label">Ranking</span>
-      <ol class="ranking-list">
-        @for (item of verdict.ranking; track item) {
-          <li>{{ item }}</li>
-        }
-      </ol>
-    </div>
+  <div class="ranking">
+    <span class="label">Ranking</span>
+    <ol class="ranking-list">
+      @for (item of verdict.ranking; track item) {
+      <li>{{ item }}</li>
+      }
+    </ol>
+  </div>
   }
 
   <div class="reasoning">
@@ -23,24 +23,22 @@
   </div>
 
   @if (verdict.tradeoffs.length) {
-    <div class="tradeoffs">
-      <span class="label">Tradeoffs</span>
-      <ul>
-        @for (t of verdict.tradeoffs; track t) {
-          <li>{{ t }}</li>
-        }
-      </ul>
-    </div>
-  }
-
-  @if (verdict.whenAlternativeIsBetter.length) {
-    <div class="alternatives">
-      <span class="label">When to Choose Differently</span>
-      <ul>
-        @for (a of verdict.whenAlternativeIsBetter; track a) {
-          <li>{{ a }}</li>
-        }
-      </ul>
-    </div>
+  <div class="tradeoffs">
+    <span class="label">Tradeoffs</span>
+    <ul>
+      @for (t of verdict.tradeoffs; track t) {
+      <li>{{ t }}</li>
+      }
+    </ul>
+  </div>
+  } @if (verdict.whenAlternativeIsBetter.length) {
+  <div class="alternatives">
+    <span class="label">When to Choose Differently</span>
+    <ul>
+      @for (a of verdict.whenAlternativeIsBetter; track a) {
+      <li>{{ a }}</li>
+      }
+    </ul>
+  </div>
   }
 </div>

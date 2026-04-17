@@ -1,6 +1,9 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { ReplayTimelineComponent } from './replay-timeline';
 import type { Session, LlmTrace } from '@consensus-lab/shared-types';
 
@@ -79,7 +82,9 @@ describe('ReplayTimelineComponent', () => {
 
     component.expandTrace('agent-analysis', 'pragmatist');
 
-    const req = httpMock.expectOne('http://localhost:3000/api/sessions/sess-1/traces');
+    const req = httpMock.expectOne(
+      'http://localhost:3000/api/sessions/sess-1/traces',
+    );
     const trace: LlmTrace = {
       id: 'tr-1',
       sessionId: 'sess-1',

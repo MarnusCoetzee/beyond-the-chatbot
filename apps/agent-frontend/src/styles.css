@@ -70,9 +70,21 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(76, 201, 240, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(155, 92, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(54, 211, 153, 0.02) 0%, transparent 50%);
+    radial-gradient(
+      ellipse at 20% 50%,
+      rgba(76, 201, 240, 0.04) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(155, 92, 255, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 50% 80%,
+      rgba(54, 211, 153, 0.02) 0%,
+      transparent 50%
+    );
 }
 
 /* === Faint Grid === */

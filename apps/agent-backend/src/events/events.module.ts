@@ -6,7 +6,10 @@ import { SessionModule } from '../session/session.module';
 
 @Global()
 @Module({
-  imports: [forwardRef(() => OrchestrationModule), forwardRef(() => SessionModule)],
+  imports: [
+    forwardRef(() => OrchestrationModule),
+    forwardRef(() => SessionModule),
+  ],
   controllers: [EventsController],
   providers: [EventBusService],
   exports: [EventBusService],

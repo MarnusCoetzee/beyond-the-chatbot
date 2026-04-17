@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { LlmService } from '../llm/llm.service';
-import type { LlmConfig, ResearchPacket, ResearchClaim, Source } from '@consensus-lab/shared-types';
+import type {
+  LlmConfig,
+  ResearchPacket,
+  ResearchClaim,
+  Source,
+} from '@consensus-lab/shared-types';
 import type { LlmRequest } from '../llm/llm.service';
 import type { RawSearchResult } from './search-provider.service';
 
@@ -41,11 +46,9 @@ Return JSON with this exact shape:
       metadata: { stage: 'packet-building' },
     };
 
-    const response = await this.llm.completeJson<Omit<ResearchPacket, 'claims' | 'webSources'>>(
-      config,
-      request,
-      { sessionId, stage: 'packet-building' },
-    );
+    const response = await this.llm.completeJson<
+      Omit<ResearchPacket, 'claims' | 'webSources'>
+    >(config, request, { sessionId, stage: 'packet-building' });
 
     return {
       ...response.result,
@@ -95,8 +98,14 @@ Be thorough. Include at least 3 options, 5+ evaluation criteria, and 10+ claims.
   private inferSourceType(url: string): Source['type'] {
     if (url.includes('github.com')) return 'docs';
     if (url.includes('benchmark') || url.includes('perf')) return 'benchmark';
-    if (url.includes('reddit.com') || url.includes('stackoverflow')) return 'forum';
-    if (url.includes('blog') || url.includes('medium.com') || url.includes('dev.to')) return 'blog';
+    if (url.includes('reddit.com') || url.includes('stackoverflow'))
+      return 'forum';
+    if (
+      url.includes('blog') ||
+      url.includes('medium.com') ||
+      url.includes('dev.to')
+    )
+      return 'blog';
     return 'other';
   }
 }

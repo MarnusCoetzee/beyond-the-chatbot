@@ -27,7 +27,9 @@ export class ReplayTimelineComponent {
   private readonly loadingTraces = signal(false);
   private readonly expandedKeys = signal<Set<string>>(new Set());
 
-  readonly cards = computed<TimelineCard[]>(() => this.buildCards(this.session));
+  readonly cards = computed<TimelineCard[]>(() =>
+    this.buildCards(this.session),
+  );
 
   analysisFor(agentId: string) {
     return this.session.analyses.find((a) => a.agentId === agentId);
@@ -71,11 +73,14 @@ export class ReplayTimelineComponent {
     const list = this.traces();
     if (!list) return undefined;
 
-    const stages = stage === 'packet-building-knowledge'
-      ? ['packet-building-knowledge', 'packet-building']
-      : [stage];
+    const stages =
+      stage === 'packet-building-knowledge'
+        ? ['packet-building-knowledge', 'packet-building']
+        : [stage];
 
-    return list.find((t) => stages.includes(t.stage) && (t.actorId ?? undefined) === actorId);
+    return list.find(
+      (t) => stages.includes(t.stage) && (t.actorId ?? undefined) === actorId,
+    );
   }
 
   tracesLoaded(): boolean {
@@ -92,7 +97,10 @@ export class ReplayTimelineComponent {
     if (session.researchPacket) {
       cards.push({
         kind: 'research',
-        stage: session.researchPacket.webSources.length > 0 ? 'packet-building' : 'packet-building-knowledge',
+        stage:
+          session.researchPacket.webSources.length > 0
+            ? 'packet-building'
+            : 'packet-building-knowledge',
         title: 'Research',
       });
     }
@@ -107,8 +115,15 @@ export class ReplayTimelineComponent {
       });
     }
 
-    if (session.disagreements.length > 0 || session.challengePrompts.length > 0) {
-      cards.push({ kind: 'judge-review', stage: 'judge-review', title: 'Judge Review' });
+    if (
+      session.disagreements.length > 0 ||
+      session.challengePrompts.length > 0
+    ) {
+      cards.push({
+        kind: 'judge-review',
+        stage: 'judge-review',
+        title: 'Judge Review',
+      });
     }
 
     for (const rebuttal of session.rebuttals) {
@@ -122,7 +137,11 @@ export class ReplayTimelineComponent {
     }
 
     if (session.verdict) {
-      cards.push({ kind: 'verdict', stage: 'judge-verdict', title: 'Final Verdict' });
+      cards.push({
+        kind: 'verdict',
+        stage: 'judge-verdict',
+        title: 'Final Verdict',
+      });
     }
 
     return cards;

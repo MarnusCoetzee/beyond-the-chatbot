@@ -1,6 +1,8 @@
 .agent-card {
   border-left: 3px solid var(--agent-color);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .card-header {
@@ -65,7 +67,8 @@
   width: 100%;
 }
 
-.reason-list, .risk-list {
+.reason-list,
+.risk-list {
   list-style: none;
   margin-top: var(--space-2);
   display: flex;
@@ -73,7 +76,8 @@
   gap: var(--space-1);
 }
 
-.reason-list li, .risk-list li {
+.reason-list li,
+.risk-list li {
   font-size: 13px;
   color: var(--text-secondary);
   padding-left: var(--space-3);

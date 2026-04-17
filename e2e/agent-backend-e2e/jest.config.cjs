@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   displayName: 'agent-backend-e2e',
   globalSetup: '<rootDir>/src/support/global-setup.ts',
   globalTeardown: '<rootDir>/src/support/global-teardown.ts',

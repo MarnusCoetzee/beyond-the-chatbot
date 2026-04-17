@@ -2,16 +2,18 @@
 
 <main class="app-main">
   @if (isReplayRoute) {
-    <router-outlet />
+  <router-outlet />
   } @else if ((sessionState.session$ | async) === null) {
-    <div class="landing-view">
-      <div class="landing-hero">
-        <h1 class="landing-title">Consensus Lab</h1>
-        <p class="landing-subtitle">Multi-agent AI deliberation for engineering decisions</p>
-      </div>
-      <app-question-input />
+  <div class="landing-view">
+    <div class="landing-hero">
+      <h1 class="landing-title">Consensus Lab</h1>
+      <p class="landing-subtitle">
+        Multi-agent AI deliberation for engineering decisions
+      </p>
     </div>
+    <app-question-input />
+  </div>
   } @else {
-    <app-deliberation-view />
+  <app-deliberation-view />
   }
 </main>

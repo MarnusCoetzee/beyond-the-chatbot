@@ -56,8 +56,8 @@
   margin-bottom: var(--space-1);
 }
 
-.field input[type="text"],
-.field input[type="password"],
+.field input[type='text'],
+.field input[type='password'],
 .field select {
   width: 100%;
   background: var(--surface-1);
@@ -97,7 +97,11 @@
 }
 
 .save-btn {
-  background: linear-gradient(135deg, var(--accent-active), var(--accent-judge));
+  background: linear-gradient(
+    135deg,
+    var(--accent-active),
+    var(--accent-judge)
+  );
   border: none;
   border-radius: 10px;
   color: white;

@@ -1,6 +1,12 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
-import type { SseStateChanged, SseStageMetadata, SseDone, SseHeartbeat, SessionEvent } from '@consensus-lab/shared-types';
+import type {
+  SseStateChanged,
+  SseStageMetadata,
+  SseDone,
+  SseHeartbeat,
+  SessionEvent,
+} from '@consensus-lab/shared-types';
 
 export type SseMessage =
   | { type: 'session.event'; data: SessionEvent }
@@ -29,7 +35,10 @@ export class SseService {
       for (const type of eventTypes) {
         eventSource.addEventListener(type, (event: MessageEvent) => {
           this.zone.run(() => {
-            subscriber.next({ type, data: JSON.parse(event.data) } as SseMessage);
+            subscriber.next({
+              type,
+              data: JSON.parse(event.data),
+            } as SseMessage);
             if (type === 'session.done') {
               eventSource.close();
               subscriber.complete();

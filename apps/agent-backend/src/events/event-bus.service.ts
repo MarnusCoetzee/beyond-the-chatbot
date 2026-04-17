@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { Subject, Observable, filter } from 'rxjs';
-import { SessionEvent, SseStateChanged, SseStageMetadata, SseDone, SseHeartbeat } from '@consensus-lab/shared-types';
+import {
+  SessionEvent,
+  SseStateChanged,
+  SseStageMetadata,
+  SseDone,
+  SseHeartbeat,
+} from '@consensus-lab/shared-types';
 
 export type SseEvent =
   | { type: 'session.event'; sessionId: string; data: SessionEvent }
   | { type: 'session.state_changed'; sessionId: string; data: SseStateChanged }
-  | { type: 'session.stage_metadata'; sessionId: string; data: SseStageMetadata }
+  | {
+      type: 'session.stage_metadata';
+      sessionId: string;
+      data: SseStageMetadata;
+    }
   | { type: 'session.heartbeat'; sessionId: string; data: SseHeartbeat }
   | { type: 'session.done'; sessionId: string; data: SseDone };
 

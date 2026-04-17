@@ -39,7 +39,7 @@ interface AgentConfig {
   agentId: string;
   displayName: string;
   role: AgentRole;
-  lens: string;              // e.g. "speed, maintainability, hiring, time to market"
+  lens: string; // e.g. "speed, maintainability, hiring, time to market"
   systemPrompt: string;
 }
 ```
@@ -62,7 +62,7 @@ interface ResearchClaim {
   criterion: string;
   claim: string;
   supportLevel: 'strong' | 'moderate' | 'weak';
-  sourceRefs: string[];       // Source.id references
+  sourceRefs: string[]; // Source.id references
 }
 
 interface OptionSummary {
@@ -103,7 +103,7 @@ interface AgentAnalysis {
   recommendation: string;
   topReasons: string[];
   risks: string[];
-  confidence: number;         // 0-100
+  confidence: number; // 0-100
   strongestCounterargument: string;
   evidenceRefs: EvidenceRef[];
 }
@@ -225,6 +225,7 @@ interface Session {
 ```
 
 **Data access semantics:**
+
 - Full session object = canonical latest snapshot (use for normal page loads)
 - `events[]` = execution history (use for replay animation)
 - Live run = build incrementally from SSE stream
@@ -319,6 +320,7 @@ Each transition: persists incrementally via `SessionRepository`, emits a `Sessio
 Persistence and HTTP surface only.
 
 **SessionRepository** abstraction over `better-sqlite3`:
+
 - `create(session)` / `getById(id)` / `list()`
 - `updateStatus(id, status)`
 - `saveResearchPacket(id, packet)`
@@ -344,6 +346,7 @@ SSE connections + event bus.
 ### Config Validation
 
 `CreateSessionRequest` validated with class-validator:
+
 - URL format for `baseUrl`
 - Non-empty `apiKey` and `model`
 - `searchConfig` optional but complete when present (provider enum + apiKey)
@@ -367,21 +370,21 @@ A premium dark command interface with restrained glass surfaces, semantic glow, 
 
 ### Palette
 
-| Token | Value | Purpose |
-|---|---|---|
-| `--bg-deep` | `#060816` | Base background |
-| `--surface-1` | `#0b1220` | Elevated panels |
-| `--surface-2` | `#101a2b` | Card surfaces |
-| `--glass` | `rgba(17, 25, 40, 0.72)` | Glass tint |
-| `--border` | `rgba(130, 170, 255, 0.14)` | Subtle borders |
-| `--text-primary` | `#e8f0ff` | Primary text |
-| `--text-secondary` | `#9eb0d0` | Secondary text |
-| `--text-muted` | `#6f7f9e` | Muted text |
-| `--accent-active` | `#4cc9f0` | Cyan: active reasoning |
-| `--accent-judge` | `#9b5cff` | Violet: arbitration |
-| `--accent-success` | `#36d399` | Emerald: complete/grounded |
-| `--accent-warning` | `#ffb84d` | Amber: disagreement/caution |
-| `--accent-error` | `#ff6b81` | Crimson: error/conflict |
+| Token              | Value                       | Purpose                     |
+| ------------------ | --------------------------- | --------------------------- |
+| `--bg-deep`        | `#060816`                   | Base background             |
+| `--surface-1`      | `#0b1220`                   | Elevated panels             |
+| `--surface-2`      | `#101a2b`                   | Card surfaces               |
+| `--glass`          | `rgba(17, 25, 40, 0.72)`    | Glass tint                  |
+| `--border`         | `rgba(130, 170, 255, 0.14)` | Subtle borders              |
+| `--text-primary`   | `#e8f0ff`                   | Primary text                |
+| `--text-secondary` | `#9eb0d0`                   | Secondary text              |
+| `--text-muted`     | `#6f7f9e`                   | Muted text                  |
+| `--accent-active`  | `#4cc9f0`                   | Cyan: active reasoning      |
+| `--accent-judge`   | `#9b5cff`                   | Violet: arbitration         |
+| `--accent-success` | `#36d399`                   | Emerald: complete/grounded  |
+| `--accent-warning` | `#ffb84d`                   | Amber: disagreement/caution |
+| `--accent-error`   | `#ff6b81`                   | Crimson: error/conflict     |
 
 Agent-specific subtle accents: Pragmatist (blue), Performance Engineer (emerald), DX Advocate (amber), Skeptic (rose), Judge (violet).
 
@@ -407,14 +410,14 @@ This prevents the "foggy aquarium" problem where everything is equally transluce
 
 ### Visual States
 
-| State | Treatment |
-|---|---|
-| Idle | Muted graphite |
-| Active | Cyan pulse |
-| Streaming | Cyan shimmer, left-to-right sweep, moving dots |
-| Complete | Emerald glow |
-| Challenged | Amber halo |
-| Error | Red glow |
+| State      | Treatment                                      |
+| ---------- | ---------------------------------------------- |
+| Idle       | Muted graphite                                 |
+| Active     | Cyan pulse                                     |
+| Streaming  | Cyan shimmer, left-to-right sweep, moving dots |
+| Complete   | Emerald glow                                   |
+| Challenged | Amber halo                                     |
+| Error      | Red glow                                       |
 
 ### Focus Mode
 
@@ -433,6 +436,7 @@ Max width 1600-1800px. Padding 24-32px. Column gap 20px. Sticky headers per colu
 ### Top Control Bar
 
 Spans full width above columns:
+
 - `Consensus Lab` product name (left)
 - Session status chip
 - Live SSE connection indicator
@@ -459,6 +463,7 @@ Spans full width above columns:
 ### Column 3: Specialist Stations
 
 Agent cards as living units:
+
 - Icon, role label, agent-specific accent
 - Status strip (pulsing when active)
 - Confidence ring/meter
@@ -471,6 +476,7 @@ Cards animate in on completion. Challenge state shows highlighted edge + amber g
 ### Column 4: Command Adjudicator
 
 Taller, cleaner cards. Violet accent throughout.
+
 - Disagreement cards with severity heat
 - Challenge prompts styled as official directives (target agent highlighted)
 - Verdict panel:
@@ -502,6 +508,7 @@ Faint grid + drifting gradient blobs + tiny particle field. Subliminal, not deco
 ### Motion Language
 
 Animations are signal propagation, not decoration:
+
 - Node pulse when active
 - Edge glow particles moving along graph paths
 - Agent cards slide in on completion
@@ -518,32 +525,32 @@ Animations are signal propagation, not decoration:
 
 ### Components
 
-| Component | Purpose |
-|---|---|
-| `QuestionInputComponent` | Mission prompt input, example chips, settings trigger |
-| `SettingsDialogComponent` | LLM config + search toggle (CDK dialog) |
-| `ControlBarComponent` | Top app bar: name, status, phase, timer, settings |
-| `DeliberationViewComponent` | 4-column grid shell, SSE subscription |
-| `PipelineStatusComponent` | Vertical progress rail + stage timing |
-| `TelemetryStripComponent` | Model, tokens, cost, elapsed time |
-| `ResearchPacketPanelComponent` | Sources, claims, gaps |
-| `SourceCardComponent` | Dossier tile with type badge |
-| `ClaimCardComponent` | Claim with signal-strength bars |
-| `AgentCardComponent` | Living agent unit with confidence ring |
-| `JudgePanelComponent` | Disagreements, challenges, verdict |
-| `DisagreementCardComponent` | Severity-heat conflict card |
-| `VerdictCardComponent` | Sealed verdict display |
-| `PipelineGraphComponent` | Animated DAG with custom node/edge templates |
-| `SessionHistoryComponent` | Past sessions list (sidebar/modal) |
+| Component                      | Purpose                                               |
+| ------------------------------ | ----------------------------------------------------- |
+| `QuestionInputComponent`       | Mission prompt input, example chips, settings trigger |
+| `SettingsDialogComponent`      | LLM config + search toggle (CDK dialog)               |
+| `ControlBarComponent`          | Top app bar: name, status, phase, timer, settings     |
+| `DeliberationViewComponent`    | 4-column grid shell, SSE subscription                 |
+| `PipelineStatusComponent`      | Vertical progress rail + stage timing                 |
+| `TelemetryStripComponent`      | Model, tokens, cost, elapsed time                     |
+| `ResearchPacketPanelComponent` | Sources, claims, gaps                                 |
+| `SourceCardComponent`          | Dossier tile with type badge                          |
+| `ClaimCardComponent`           | Claim with signal-strength bars                       |
+| `AgentCardComponent`           | Living agent unit with confidence ring                |
+| `JudgePanelComponent`          | Disagreements, challenges, verdict                    |
+| `DisagreementCardComponent`    | Severity-heat conflict card                           |
+| `VerdictCardComponent`         | Sealed verdict display                                |
+| `PipelineGraphComponent`       | Animated DAG with custom node/edge templates          |
+| `SessionHistoryComponent`      | Past sessions list (sidebar/modal)                    |
 
 ### Services
 
-| Service | Purpose |
-|---|---|
-| `SessionService` | HTTP: create, list, get, cancel |
-| `SseService` | `EventSource` -> `Observable<SessionEvent>` |
+| Service               | Purpose                                                  |
+| --------------------- | -------------------------------------------------------- |
+| `SessionService`      | HTTP: create, list, get, cancel                          |
+| `SseService`          | `EventSource` -> `Observable<SessionEvent>`              |
 | `SessionStateService` | `BehaviorSubject`-based reactive state, updated from SSE |
-| `SettingsService` | LLM + search config in `localStorage` |
+| `SettingsService`     | LLM + search config in `localStorage`                    |
 
 ### State Management
 
@@ -564,14 +571,14 @@ No NgRx. Plain RxJS `BehaviorSubject`s + `async` pipe. Single-session focus make
 
 ### Endpoints
 
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/api/health` | Health check |
-| `POST` | `/api/sessions` | Create session, start pipeline |
-| `GET` | `/api/sessions` | List past sessions |
-| `GET` | `/api/sessions/:id` | Full session data |
-| `POST` | `/api/sessions/:id/cancel` | Cancel a running session |
-| `GET` | `/api/sessions/:id/events` | SSE stream |
+| Method | Path                       | Purpose                        |
+| ------ | -------------------------- | ------------------------------ |
+| `GET`  | `/api/health`              | Health check                   |
+| `POST` | `/api/sessions`            | Create session, start pipeline |
+| `GET`  | `/api/sessions`            | List past sessions             |
+| `GET`  | `/api/sessions/:id`        | Full session data              |
+| `POST` | `/api/sessions/:id/cancel` | Cancel a running session       |
+| `GET`  | `/api/sessions/:id/events` | SSE stream                     |
 
 ### Request/Response Shapes
 
@@ -676,18 +683,18 @@ data: { "sessionId": "...", "finalStatus": "COMPLETE" }
 
 ## 6. Technical Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| LLM provider | Provider-agnostic (OpenAI SDK with configurable baseUrl) | Works with NIM, OpenRouter, Anthropic, OpenAI, local models |
-| Research enhancement | Optional Firecrawl or Brave, user-provided keys, "disable search" toggle | Self-contained by default, enhanced when keys available |
-| Real-time transport | SSE (server-sent events) | Flow is server-driven, simpler than WebSockets |
-| Specialist panel | Fixed 4 agents, extensible by config array | Focused demo, easy to extend without code changes |
-| Rebuttal rounds | Single round (Defend / Revise / Concede) | Snappy for lectures, lower token cost |
-| Persistence | SQLite via better-sqlite3, JSON column | Zero-config, no migrations, students clone and run |
-| State management (FE) | RxJS BehaviorSubjects | Single-session focus, no NgRx overhead |
-| Graph visualization | @swimlane/ngx-graph | Angular-native, dagre layout, custom templates |
-| Styling | Custom SCSS + design tokens, no Material defaults | Premium dark command interface requires custom visual system |
-| Scenario selector | None | User's question provides sufficient context |
+| Decision              | Choice                                                                   | Rationale                                                    |
+| --------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| LLM provider          | Provider-agnostic (OpenAI SDK with configurable baseUrl)                 | Works with NIM, OpenRouter, Anthropic, OpenAI, local models  |
+| Research enhancement  | Optional Firecrawl or Brave, user-provided keys, "disable search" toggle | Self-contained by default, enhanced when keys available      |
+| Real-time transport   | SSE (server-sent events)                                                 | Flow is server-driven, simpler than WebSockets               |
+| Specialist panel      | Fixed 4 agents, extensible by config array                               | Focused demo, easy to extend without code changes            |
+| Rebuttal rounds       | Single round (Defend / Revise / Concede)                                 | Snappy for lectures, lower token cost                        |
+| Persistence           | SQLite via better-sqlite3, JSON column                                   | Zero-config, no migrations, students clone and run           |
+| State management (FE) | RxJS BehaviorSubjects                                                    | Single-session focus, no NgRx overhead                       |
+| Graph visualization   | @swimlane/ngx-graph                                                      | Angular-native, dagre layout, custom templates               |
+| Styling               | Custom SCSS + design tokens, no Material defaults                        | Premium dark command interface requires custom visual system |
+| Scenario selector     | None                                                                     | User's question provides sufficient context                  |
 
 ---
 

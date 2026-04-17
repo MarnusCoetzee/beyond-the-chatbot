@@ -13,10 +13,12 @@
 ## File Structure
 
 **Backend — create:**
+
 - `apps/agent-backend/src/session/trace.repository.ts`
 - `apps/agent-backend/src/session/trace.repository.spec.ts`
 
 **Backend — modify:**
+
 - `packages/shared-types/src/trace.ts` (new file)
 - `packages/shared-types/src/index.ts` (add one re-export)
 - `apps/agent-backend/src/llm/llm.service.ts` (accept `traceContext`, save trace)
@@ -32,6 +34,7 @@
 - `apps/agent-backend/src/orchestration/orchestration.service.ts` (thread sessionId into calls)
 
 **Frontend — create:**
+
 - `apps/agent-frontend/src/app/services/trace.service.ts`
 - `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.ts`
 - `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.html`
@@ -41,6 +44,7 @@
 - `apps/agent-frontend/src/app/pages/replay-page/replay-page.html`
 
 **Frontend — modify:**
+
 - `apps/agent-frontend/src/app/app.routes.ts` (register route)
 - `apps/agent-frontend/src/app/services/session.service.ts` (no change — `getBySession` is separate)
 - `apps/agent-frontend/src/app/components/session-history/session-history.html` (add replay link)
@@ -54,6 +58,7 @@
 ## Task 1: Add `LlmTrace` shared type
 
 **Files:**
+
 - Create: `packages/shared-types/src/trace.ts`
 - Modify: `packages/shared-types/src/index.ts`
 
@@ -103,6 +108,7 @@ git commit -m "feat(shared-types): add LlmTrace type"
 ## Task 2: `TraceRepository` — create + test
 
 **Files:**
+
 - Create: `apps/agent-backend/src/session/trace.repository.ts`
 - Test: `apps/agent-backend/src/session/trace.repository.spec.ts`
 
@@ -244,7 +250,9 @@ export class TraceRepository {
         trace.systemPrompt,
         trace.userPrompt,
         trace.rawResponse,
-        trace.parsedOutput === undefined ? null : JSON.stringify(trace.parsedOutput),
+        trace.parsedOutput === undefined
+          ? null
+          : JSON.stringify(trace.parsedOutput),
         trace.model ?? null,
         trace.promptTokens ?? null,
         trace.completionTokens ?? null,
@@ -268,7 +276,8 @@ export class TraceRepository {
       systemPrompt: row.systemPrompt,
       userPrompt: row.userPrompt,
       rawResponse: row.rawResponse,
-      parsedOutput: row.parsedOutput === null ? undefined : JSON.parse(row.parsedOutput),
+      parsedOutput:
+        row.parsedOutput === null ? undefined : JSON.parse(row.parsedOutput),
       model: row.model ?? undefined,
       promptTokens: row.promptTokens ?? undefined,
       completionTokens: row.completionTokens ?? undefined,
@@ -295,6 +304,7 @@ git commit -m "feat(backend): add TraceRepository for LLM trace persistence"
 ## Task 3: Wire `TraceRepository` into `SessionModule`
 
 **Files:**
+
 - Modify: `apps/agent-backend/src/session/session.module.ts`
 
 - [ ] **Step 1: Add the provider + export**
@@ -335,6 +345,7 @@ git commit -m "feat(backend): expose TraceRepository from SessionModule"
 ## Task 4: Extend `LlmService` to capture traces
 
 **Files:**
+
 - Modify: `apps/agent-backend/src/llm/llm.service.ts`
 - Modify: `apps/agent-backend/src/llm/llm.service.spec.ts`
 - Modify: `apps/agent-backend/src/llm/llm.module.ts`
@@ -361,120 +372,132 @@ export class LlmModule {}
 Edit `apps/agent-backend/src/llm/llm.service.spec.ts`. Add this test inside the existing `describe('LlmService', ...)` block (append after the last test):
 
 ```ts
-  describe('trace capture', () => {
-    it('saves a trace via TraceRepository when traceContext is provided', async () => {
-      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
-      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
-        chat: {
-          completions: {
-            create: jest.fn().mockResolvedValue({
-              choices: [{ message: { content: 'hello world' } }],
-              usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
-            }),
-          },
+describe('trace capture', () => {
+  it('saves a trace via TraceRepository when traceContext is provided', async () => {
+    const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+    (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: 'hello world' } }],
+            usage: {
+              prompt_tokens: 10,
+              completion_tokens: 5,
+              total_tokens: 15,
+            },
+          }),
         },
-      }));
+      },
+    }));
 
-      const save = jest.fn();
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
-      const service = new (await import('./llm.service')).LlmService(traceRepo);
+    const save = jest.fn();
+    const traceRepo = {
+      save,
+    } as unknown as import('../session/trace.repository').TraceRepository;
+    const service = new (await import('./llm.service')).LlmService(traceRepo);
 
-      await service.complete(
-        testConfig,
-        { system: 'sys', user: 'usr' },
-        { sessionId: 's1', stage: 'agent-analysis', actorId: 'pragmatist' },
-      );
+    await service.complete(
+      testConfig,
+      { system: 'sys', user: 'usr' },
+      { sessionId: 's1', stage: 'agent-analysis', actorId: 'pragmatist' },
+    );
 
-      expect(save).toHaveBeenCalledTimes(1);
-      const trace = save.mock.calls[0][0];
-      expect(trace.sessionId).toBe('s1');
-      expect(trace.stage).toBe('agent-analysis');
-      expect(trace.actorId).toBe('pragmatist');
-      expect(trace.systemPrompt).toBe('sys');
-      expect(trace.userPrompt).toBe('usr');
-      expect(trace.rawResponse).toBe('hello world');
-      expect(trace.promptTokens).toBe(10);
-      expect(trace.completionTokens).toBe(5);
-      expect(trace.parsedOutput).toBeUndefined();
-      expect(typeof trace.id).toBe('string');
-      expect(typeof trace.createdAt).toBe('string');
-    });
-
-    it('saves the parsed JSON as parsedOutput for completeJson', async () => {
-      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
-      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
-        chat: {
-          completions: {
-            create: jest.fn().mockResolvedValue({
-              choices: [{ message: { content: '{"answer":42}' } }],
-            }),
-          },
-        },
-      }));
-
-      const save = jest.fn();
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
-      const service = new (await import('./llm.service')).LlmService(traceRepo);
-
-      await service.completeJson(
-        testConfig,
-        { system: 'sys', user: 'usr' },
-        { sessionId: 's1', stage: 'judge-review' },
-      );
-
-      const trace = save.mock.calls[0][0];
-      expect(trace.parsedOutput).toEqual({ answer: 42 });
-      expect(trace.rawResponse).toBe('{"answer":42}');
-    });
-
-    it('does not call TraceRepository when traceContext is omitted', async () => {
-      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
-      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
-        chat: {
-          completions: {
-            create: jest.fn().mockResolvedValue({
-              choices: [{ message: { content: 'ok' } }],
-            }),
-          },
-        },
-      }));
-
-      const save = jest.fn();
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
-      const service = new (await import('./llm.service')).LlmService(traceRepo);
-
-      await service.complete(testConfig, { system: 'sys', user: 'usr' });
-
-      expect(save).not.toHaveBeenCalled();
-    });
-
-    it('does not throw when trace save fails', async () => {
-      const OpenAI = (await import('openai')).default as unknown as jest.Mock;
-      (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
-        chat: {
-          completions: {
-            create: jest.fn().mockResolvedValue({
-              choices: [{ message: { content: 'ok' } }],
-            }),
-          },
-        },
-      }));
-
-      const save = jest.fn().mockImplementation(() => {
-        throw new Error('db down');
-      });
-      const traceRepo = { save } as unknown as import('../session/trace.repository').TraceRepository;
-      const service = new (await import('./llm.service')).LlmService(traceRepo);
-
-      await expect(
-        service.complete(
-          testConfig,
-          { system: 'sys', user: 'usr' },
-          { sessionId: 's1', stage: 'agent-analysis' },
-        ),
-      ).resolves.toBeDefined();
-    });
+    expect(save).toHaveBeenCalledTimes(1);
+    const trace = save.mock.calls[0][0];
+    expect(trace.sessionId).toBe('s1');
+    expect(trace.stage).toBe('agent-analysis');
+    expect(trace.actorId).toBe('pragmatist');
+    expect(trace.systemPrompt).toBe('sys');
+    expect(trace.userPrompt).toBe('usr');
+    expect(trace.rawResponse).toBe('hello world');
+    expect(trace.promptTokens).toBe(10);
+    expect(trace.completionTokens).toBe(5);
+    expect(trace.parsedOutput).toBeUndefined();
+    expect(typeof trace.id).toBe('string');
+    expect(typeof trace.createdAt).toBe('string');
   });
+
+  it('saves the parsed JSON as parsedOutput for completeJson', async () => {
+    const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+    (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: '{"answer":42}' } }],
+          }),
+        },
+      },
+    }));
+
+    const save = jest.fn();
+    const traceRepo = {
+      save,
+    } as unknown as import('../session/trace.repository').TraceRepository;
+    const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+    await service.completeJson(
+      testConfig,
+      { system: 'sys', user: 'usr' },
+      { sessionId: 's1', stage: 'judge-review' },
+    );
+
+    const trace = save.mock.calls[0][0];
+    expect(trace.parsedOutput).toEqual({ answer: 42 });
+    expect(trace.rawResponse).toBe('{"answer":42}');
+  });
+
+  it('does not call TraceRepository when traceContext is omitted', async () => {
+    const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+    (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: 'ok' } }],
+          }),
+        },
+      },
+    }));
+
+    const save = jest.fn();
+    const traceRepo = {
+      save,
+    } as unknown as import('../session/trace.repository').TraceRepository;
+    const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+    await service.complete(testConfig, { system: 'sys', user: 'usr' });
+
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('does not throw when trace save fails', async () => {
+    const OpenAI = (await import('openai')).default as unknown as jest.Mock;
+    (OpenAI as unknown as jest.Mock).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: 'ok' } }],
+          }),
+        },
+      },
+    }));
+
+    const save = jest.fn().mockImplementation(() => {
+      throw new Error('db down');
+    });
+    const traceRepo = {
+      save,
+    } as unknown as import('../session/trace.repository').TraceRepository;
+    const service = new (await import('./llm.service')).LlmService(traceRepo);
+
+    await expect(
+      service.complete(
+        testConfig,
+        { system: 'sys', user: 'usr' },
+        { sessionId: 's1', stage: 'agent-analysis' },
+      ),
+    ).resolves.toBeDefined();
+  });
+});
 ```
 
 - [ ] **Step 3: Run the specs to verify they fail**
@@ -486,8 +509,14 @@ Expected: FAIL — constructor takes no args, trace methods don't exist
 
 Replace `apps/agent-backend/src/llm/llm.service.ts` with:
 
-```ts
-import { Injectable, Logger, Inject, forwardRef, Optional } from '@nestjs/common';
+````ts
+import {
+  Injectable,
+  Logger,
+  Inject,
+  forwardRef,
+  Optional,
+} from '@nestjs/common';
 import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import { LlmConfig, LlmTrace } from '@consensus-lab/shared-types';
@@ -503,7 +532,11 @@ export interface LlmRequest {
 
 export interface LlmResponse<T = string> {
   result: T;
-  usage?: { promptTokens: number; completionTokens: number; totalTokens: number };
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
 }
 
 export interface TraceContext {
@@ -527,7 +560,10 @@ export class LlmService {
     request: LlmRequest,
     trace?: TraceContext,
   ): Promise<LlmResponse<string>> {
-    const client = new OpenAI({ baseURL: config.baseUrl, apiKey: config.apiKey });
+    const client = new OpenAI({
+      baseURL: config.baseUrl,
+      apiKey: config.apiKey,
+    });
     const response = await client.chat.completions.create({
       model: config.model,
       messages: [
@@ -548,7 +584,9 @@ export class LlmService {
       : undefined;
 
     if (request.metadata) {
-      this.logger.log(`LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`);
+      this.logger.log(
+        `LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`,
+      );
     }
 
     this.persistTrace(trace, config, request, content, usage, undefined);
@@ -564,7 +602,10 @@ export class LlmService {
     const systemWithJsonInstruction = `${request.system}\n\nYou MUST respond with valid JSON only. No markdown, no code fences, no explanation.`;
 
     // Inline a minimal copy of `complete` so we can record the raw response AND the parsed output in a single trace row.
-    const client = new OpenAI({ baseURL: config.baseUrl, apiKey: config.apiKey });
+    const client = new OpenAI({
+      baseURL: config.baseUrl,
+      apiKey: config.apiKey,
+    });
     const response = await client.chat.completions.create({
       model: config.model,
       messages: [
@@ -585,10 +626,15 @@ export class LlmService {
       : undefined;
 
     if (request.metadata) {
-      this.logger.log(`LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`);
+      this.logger.log(
+        `LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`,
+      );
     }
 
-    const cleaned = rawContent.replace(/```json?\n?/g, '').replace(/```\n?/g, '').trim();
+    const cleaned = rawContent
+      .replace(/```json?\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim();
     const parsed = JSON.parse(cleaned) as T;
 
     this.persistTrace(
@@ -608,7 +654,9 @@ export class LlmService {
     config: LlmConfig,
     request: { system: string; user: string },
     rawResponse: string,
-    usage: { promptTokens: number; completionTokens: number; totalTokens: number } | undefined,
+    usage:
+      | { promptTokens: number; completionTokens: number; totalTokens: number }
+      | undefined,
     parsedOutput: unknown,
   ): void {
     if (!trace || !this.traceRepo) return;
@@ -635,7 +683,7 @@ export class LlmService {
     }
   }
 }
-```
+````
 
 - [ ] **Step 5: Run the specs to verify they pass**
 
@@ -654,6 +702,7 @@ git commit -m "feat(backend): capture LLM traces in LlmService"
 ## Task 5: Thread `sessionId` + traceContext through callers
 
 **Files:**
+
 - Modify: `apps/agent-backend/src/research/packet-builder.service.ts`
 - Modify: `apps/agent-backend/src/research/research-extraction.service.ts`
 - Modify: `apps/agent-backend/src/research/research.service.ts`
@@ -756,6 +805,7 @@ git commit -m "feat(backend): thread sessionId + traceContext through pipeline s
 ## Task 6: `GET /api/sessions/:id/traces` endpoint
 
 **Files:**
+
 - Modify: `apps/agent-backend/src/session/session.controller.ts`
 
 - [ ] **Step 1: Add the route handler**
@@ -763,14 +813,31 @@ git commit -m "feat(backend): thread sessionId + traceContext through pipeline s
 Edit `apps/agent-backend/src/session/session.controller.ts`. Add `TraceRepository` to the imports and to the constructor; add a new handler. Final file:
 
 ```ts
-import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus, ConflictException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  ConflictException,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { PendingRunService } from './pending-run.service';
 import { TraceRepository } from './trace.repository';
 import { OrchestrationService } from '../orchestration/orchestration.service';
 import { v4 as uuidv4 } from 'uuid';
-import type { Session, CreateSessionResponse, SessionListItem, LlmTrace } from '@consensus-lab/shared-types';
+import type {
+  Session,
+  CreateSessionResponse,
+  SessionListItem,
+  LlmTrace,
+} from '@consensus-lab/shared-types';
 
 @Controller('sessions')
 export class SessionController {
@@ -827,7 +894,9 @@ export class SessionController {
     const session = this.sessionRepo.getById(id);
     if (!session) throw new NotFoundException(`Session ${id} not found`);
     if (['COMPLETE', 'ERROR', 'CANCELLED'].includes(session.status)) {
-      throw new ConflictException(`Session is already in terminal state: ${session.status}`);
+      throw new ConflictException(
+        `Session is already in terminal state: ${session.status}`,
+      );
     }
     this.orchestration.cancelSession(id);
     this.sessionRepo.updateStatus(id, 'CANCELLED');
@@ -861,6 +930,7 @@ git commit -m "feat(backend): add GET /sessions/:id/traces endpoint"
 ## Task 7: Frontend `TraceService`
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/services/trace.service.ts`
 
 - [ ] **Step 1: Create the service**
@@ -877,7 +947,9 @@ export class TraceService {
   private readonly baseUrl = 'http://localhost:3000/api';
 
   getBySession(sessionId: string): Observable<LlmTrace[]> {
-    return this.http.get<LlmTrace[]>(`${this.baseUrl}/sessions/${sessionId}/traces`);
+    return this.http.get<LlmTrace[]>(
+      `${this.baseUrl}/sessions/${sessionId}/traces`,
+    );
   }
 }
 ```
@@ -899,6 +971,7 @@ git commit -m "feat(frontend): add TraceService for fetching LLM traces"
 ## Task 8: `ReplayTimelineComponent`
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.ts`
 - Create: `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.html`
 - Create: `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.css`
@@ -911,7 +984,10 @@ Create `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.s
 ```ts
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { ReplayTimelineComponent } from './replay-timeline';
 import type { Session, LlmTrace } from '@consensus-lab/shared-types';
 
@@ -990,7 +1066,9 @@ describe('ReplayTimelineComponent', () => {
 
     component.expandTrace('agent-analysis', 'pragmatist');
 
-    const req = httpMock.expectOne('http://localhost:3000/api/sessions/sess-1/traces');
+    const req = httpMock.expectOne(
+      'http://localhost:3000/api/sessions/sess-1/traces',
+    );
     const trace: LlmTrace = {
       id: 'tr-1',
       sessionId: 'sess-1',
@@ -1053,12 +1131,18 @@ export class ReplayTimelineComponent {
   private readonly loadingTraces = signal(false);
   private readonly expandedKeys = signal<Set<string>>(new Set());
 
-  readonly cards = computed<TimelineCard[]>(() => this.buildCards(this.session));
+  readonly cards = computed<TimelineCard[]>(() =>
+    this.buildCards(this.session),
+  );
 
   private buildCards(session: Session): TimelineCard[] {
     const cards: TimelineCard[] = [];
     if (session.researchPacket) {
-      cards.push({ kind: 'research', stage: 'packet-building-knowledge', title: 'Research' });
+      cards.push({
+        kind: 'research',
+        stage: 'packet-building-knowledge',
+        title: 'Research',
+      });
     }
     for (const a of session.analyses) {
       cards.push({
@@ -1069,8 +1153,15 @@ export class ReplayTimelineComponent {
         subtitle: `confidence ${a.confidence}`,
       });
     }
-    if (session.disagreements.length > 0 || session.challengePrompts.length > 0) {
-      cards.push({ kind: 'judge-review', stage: 'judge-review', title: 'Judge Review' });
+    if (
+      session.disagreements.length > 0 ||
+      session.challengePrompts.length > 0
+    ) {
+      cards.push({
+        kind: 'judge-review',
+        stage: 'judge-review',
+        title: 'Judge Review',
+      });
     }
     for (const r of session.rebuttals) {
       cards.push({
@@ -1082,7 +1173,11 @@ export class ReplayTimelineComponent {
       });
     }
     if (session.verdict) {
-      cards.push({ kind: 'verdict', stage: 'judge-verdict', title: 'Final Verdict' });
+      cards.push({
+        kind: 'verdict',
+        stage: 'judge-verdict',
+        title: 'Final Verdict',
+      });
     }
     return cards;
   }
@@ -1096,7 +1191,9 @@ export class ReplayTimelineComponent {
   }
 
   stageMetadata(stage: string) {
-    return this.session.stageMetadata.find((m) => m.stage.toLowerCase().includes(stage.split('-')[0]));
+    return this.session.stageMetadata.find((m) =>
+      m.stage.toLowerCase().includes(stage.split('-')[0]),
+    );
   }
 
   isExpanded(stage: string, actorId?: string): boolean {
@@ -1132,7 +1229,9 @@ export class ReplayTimelineComponent {
   getTrace(stage: string, actorId?: string): LlmTrace | undefined {
     const list = this.traces();
     if (!list) return undefined;
-    return list.find((t) => t.stage === stage && (t.actorId ?? undefined) === actorId);
+    return list.find(
+      (t) => t.stage === stage && (t.actorId ?? undefined) === actorId,
+    );
   }
 
   tracesLoaded(): boolean {
@@ -1154,73 +1253,76 @@ Create `apps/agent-frontend/src/app/components/replay-timeline/replay-timeline.h
 ```html
 <div class="timeline">
   @for (card of cards(); track card.stage + (card.actorId ?? '')) {
-    <div class="timeline-card">
-      <div class="card-header">
-        <h3 class="card-title">{{ card.title }}</h3>
-        @if (card.subtitle) {
-          <p class="card-subtitle mono">{{ card.subtitle }}</p>
-        }
-      </div>
-
-      <div class="card-body">
-        @switch (card.kind) {
-          @case ('research') {
-            <p>Options: {{ session.researchPacket?.options?.join(', ') }}</p>
-            <p>Claims: {{ session.researchPacket?.claims?.length ?? 0 }}</p>
-          }
-          @case ('analysis') {
-            @if (analysisFor(card.actorId!); as a) {
-              <p><strong>Recommendation:</strong> {{ a.recommendation }}</p>
-              <p><strong>Top reasons:</strong></p>
-              <ul>
-                @for (r of a.topReasons; track r) { <li>{{ r }}</li> }
-              </ul>
-            }
-          }
-          @case ('judge-review') {
-            <p>Disagreements: {{ session.disagreements.length }}</p>
-            <p>Challenges: {{ session.challengePrompts.length }}</p>
-          }
-          @case ('rebuttal') {
-            @if (rebuttalFor(card.actorId!); as r) {
-              <p><strong>Action:</strong> {{ r.action }}</p>
-              <p>{{ r.response }}</p>
-            }
-          }
-          @case ('verdict') {
-            @if (session.verdict; as v) {
-              <p><strong>{{ v.primaryRecommendation }}</strong> ({{ v.finalConfidence }}% confidence)</p>
-              <p>{{ v.reasoning }}</p>
-            }
-          }
-        }
-      </div>
-
-      <div class="trace-section">
-        @if (!isExpanded(card.stage, card.actorId)) {
-          <button class="trace-toggle" (click)="expandTrace(card.stage, card.actorId)">Show LLM Trace</button>
-        } @else {
-          <button class="trace-toggle" (click)="collapseTrace(card.stage, card.actorId)">Hide LLM Trace</button>
-          @if (tracesLoading()) {
-            <p class="mono">Loading traces…</p>
-          } @else if (getTrace(card.stage, card.actorId); as trace) {
-            <div class="trace-panel">
-              <h4 class="label">System Prompt</h4>
-              <pre class="trace-pre">{{ trace.systemPrompt }}</pre>
-              <h4 class="label">User Prompt</h4>
-              <pre class="trace-pre">{{ trace.userPrompt }}</pre>
-              <h4 class="label">Raw Response</h4>
-              <pre class="trace-pre">{{ trace.rawResponse }}</pre>
-              <p class="mono">
-                {{ trace.model }} · {{ trace.promptTokens ?? '?' }} + {{ trace.completionTokens ?? '?' }} tokens
-              </p>
-            </div>
-          } @else if (tracesLoaded()) {
-            <p class="mono">Traces not available for this session.</p>
-          }
-        }
-      </div>
+  <div class="timeline-card">
+    <div class="card-header">
+      <h3 class="card-title">{{ card.title }}</h3>
+      @if (card.subtitle) {
+      <p class="card-subtitle mono">{{ card.subtitle }}</p>
+      }
     </div>
+
+    <div class="card-body">
+      @switch (card.kind) { @case ('research') {
+      <p>Options: {{ session.researchPacket?.options?.join(', ') }}</p>
+      <p>Claims: {{ session.researchPacket?.claims?.length ?? 0 }}</p>
+      } @case ('analysis') { @if (analysisFor(card.actorId!); as a) {
+      <p><strong>Recommendation:</strong> {{ a.recommendation }}</p>
+      <p><strong>Top reasons:</strong></p>
+      <ul>
+        @for (r of a.topReasons; track r) {
+        <li>{{ r }}</li>
+        }
+      </ul>
+      } } @case ('judge-review') {
+      <p>Disagreements: {{ session.disagreements.length }}</p>
+      <p>Challenges: {{ session.challengePrompts.length }}</p>
+      } @case ('rebuttal') { @if (rebuttalFor(card.actorId!); as r) {
+      <p><strong>Action:</strong> {{ r.action }}</p>
+      <p>{{ r.response }}</p>
+      } } @case ('verdict') { @if (session.verdict; as v) {
+      <p>
+        <strong>{{ v.primaryRecommendation }}</strong> ({{ v.finalConfidence }}%
+        confidence)
+      </p>
+      <p>{{ v.reasoning }}</p>
+      } } }
+    </div>
+
+    <div class="trace-section">
+      @if (!isExpanded(card.stage, card.actorId)) {
+      <button
+        class="trace-toggle"
+        (click)="expandTrace(card.stage, card.actorId)"
+      >
+        Show LLM Trace
+      </button>
+      } @else {
+      <button
+        class="trace-toggle"
+        (click)="collapseTrace(card.stage, card.actorId)"
+      >
+        Hide LLM Trace
+      </button>
+      @if (tracesLoading()) {
+      <p class="mono">Loading traces…</p>
+      } @else if (getTrace(card.stage, card.actorId); as trace) {
+      <div class="trace-panel">
+        <h4 class="label">System Prompt</h4>
+        <pre class="trace-pre">{{ trace.systemPrompt }}</pre>
+        <h4 class="label">User Prompt</h4>
+        <pre class="trace-pre">{{ trace.userPrompt }}</pre>
+        <h4 class="label">Raw Response</h4>
+        <pre class="trace-pre">{{ trace.rawResponse }}</pre>
+        <p class="mono">
+          {{ trace.model }} · {{ trace.promptTokens ?? '?' }} + {{
+          trace.completionTokens ?? '?' }} tokens
+        </p>
+      </div>
+      } @else if (tracesLoaded()) {
+      <p class="mono">Traces not available for this session.</p>
+      } }
+    </div>
+  </div>
   }
 </div>
 ```
@@ -1333,6 +1435,7 @@ git commit -m "feat(frontend): add ReplayTimelineComponent with lazy trace loadi
 ## Task 9: Replay page + route
 
 **Files:**
+
 - Create: `apps/agent-frontend/src/app/pages/replay-page/replay-page.ts`
 - Create: `apps/agent-frontend/src/app/pages/replay-page/replay-page.html`
 - Modify: `apps/agent-frontend/src/app/app.routes.ts`
@@ -1387,12 +1490,12 @@ Create `apps/agent-frontend/src/app/pages/replay-page/replay-page.html`:
   </header>
 
   @if (error(); as err) {
-    <p class="error">{{ err }}</p>
+  <p class="error">{{ err }}</p>
   } @else if (session(); as s) {
-    <p class="question">{{ s.question }}</p>
-    <app-replay-timeline [session]="s" />
+  <p class="question">{{ s.question }}</p>
+  <app-replay-timeline [session]="s" />
   } @else {
-    <p>Loading…</p>
+  <p>Loading…</p>
   }
 </div>
 ```
@@ -1419,15 +1522,17 @@ Edit `apps/agent-frontend/src/app/app.html` — replace the file with:
 
 <main class="app-main">
   @if ((sessionState.session$ | async) === null) {
-    <div class="landing-view">
-      <div class="landing-hero">
-        <h1 class="landing-title">Consensus Lab</h1>
-        <p class="landing-subtitle">Multi-agent AI deliberation for engineering decisions</p>
-      </div>
-      <app-question-input />
+  <div class="landing-view">
+    <div class="landing-hero">
+      <h1 class="landing-title">Consensus Lab</h1>
+      <p class="landing-subtitle">
+        Multi-agent AI deliberation for engineering decisions
+      </p>
     </div>
+    <app-question-input />
+  </div>
   } @else {
-    <app-deliberation-view />
+  <app-deliberation-view />
   }
 
   <router-outlet />
@@ -1448,7 +1553,13 @@ import { SessionStateService } from './services/session-state.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, ControlBarComponent, QuestionInputComponent, DeliberationViewComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    ControlBarComponent,
+    QuestionInputComponent,
+    DeliberationViewComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -1477,6 +1588,7 @@ git commit -m "feat(frontend): add /sessions/:id/replay route"
 ## Task 10: "Replay" link in session history
 
 **Files:**
+
 - Modify: `apps/agent-frontend/src/app/components/session-history/session-history.html`
 
 - [ ] **Step 1: Add the link**
@@ -1485,7 +1597,9 @@ Open `apps/agent-frontend/src/app/components/session-history/session-history.htm
 
 ```html
 @if (session.status === 'COMPLETE') {
-  <a class="replay-link" [routerLink]="['/sessions', session.id, 'replay']">Replay</a>
+<a class="replay-link" [routerLink]="['/sessions', session.id, 'replay']"
+  >Replay</a
+>
 }
 ```
 
@@ -1508,6 +1622,7 @@ git commit -m "feat(frontend): add Replay link in session history for completed 
 ## Task 11: Replay mode toggle on deliberation view
 
 **Files:**
+
 - Modify: `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view.ts`
 - Modify: `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view.html`
 
@@ -1516,7 +1631,14 @@ git commit -m "feat(frontend): add Replay link in session history for completed 
 Edit `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view.ts`. Add:
 
 ```ts
-import { Component, inject, ChangeDetectorRef, OnInit, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  inject,
+  ChangeDetectorRef,
+  OnInit,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 ```
 
 Inside the class, add:
@@ -1547,64 +1669,79 @@ Edit `apps/agent-frontend/src/app/components/deliberation-view/deliberation-view
 
 ```html
 @if (canReplay) {
-  <div class="replay-toggle-bar">
-    <button class="replay-toggle" (click)="toggleReplayMode()">
-      {{ replayMode() ? 'Back to deliberation view' : 'Replay mode' }}
-    </button>
-  </div>
-}
-
-@if (replayMode() && sessionState.currentSession) {
-  <app-replay-timeline [session]="sessionState.currentSession" />
+<div class="replay-toggle-bar">
+  <button class="replay-toggle" (click)="toggleReplayMode()">
+    {{ replayMode() ? 'Back to deliberation view' : 'Replay mode' }}
+  </button>
+</div>
+} @if (replayMode() && sessionState.currentSession) {
+<app-replay-timeline [session]="sessionState.currentSession" />
 } @else {
-  <div class="deliberation-grid">
-    <div class="column col-1" [class.focused]="activeColumn === 1" [class.dimmed]="activeColumn > 0 && activeColumn !== 1">
-      <div class="column-header">
-        <h2 class="label">Mission Control</h2>
-      </div>
-      <app-pipeline-status />
-      <app-telemetry-strip />
+<div class="deliberation-grid">
+  <div
+    class="column col-1"
+    [class.focused]="activeColumn === 1"
+    [class.dimmed]="activeColumn > 0 && activeColumn !== 1"
+  >
+    <div class="column-header">
+      <h2 class="label">Mission Control</h2>
     </div>
+    <app-pipeline-status />
+    <app-telemetry-strip />
+  </div>
 
-    <div class="column col-2" [class.focused]="activeColumn === 1" [class.dimmed]="activeColumn > 0 && activeColumn !== 1">
-      <div class="column-header">
-        <h2 class="label">Research Packet</h2>
-      </div>
-      <app-research-packet-panel />
+  <div
+    class="column col-2"
+    [class.focused]="activeColumn === 1"
+    [class.dimmed]="activeColumn > 0 && activeColumn !== 1"
+  >
+    <div class="column-header">
+      <h2 class="label">Research Packet</h2>
     </div>
+    <app-research-packet-panel />
+  </div>
 
-    <div class="column col-3" [class.focused]="activeColumn === 2" [class.dimmed]="activeColumn > 0 && activeColumn !== 2">
-      <div class="column-header">
-        <h2 class="label">Specialist Agents</h2>
-      </div>
-      @if (sessionState.currentSession?.analyses?.length) {
-        <div class="agent-cards">
-          @for (analysis of sessionState.currentSession!.analyses; track analysis.agentId) {
-            <app-agent-card
-              [analysis]="analysis"
-              [rebuttal]="getRebuttal(analysis.agentId)"
-            />
-          }
-        </div>
-      } @else if (sessionState.currentSession?.status === 'AGENTS_ANALYZING') {
-        <div class="analyzing-state">
-          <p class="mono">Agents are analyzing...</p>
-        </div>
-      } @else {
-        <div class="placeholder-content">
-          <p class="mono">Waiting for agent analysis</p>
-        </div>
+  <div
+    class="column col-3"
+    [class.focused]="activeColumn === 2"
+    [class.dimmed]="activeColumn > 0 && activeColumn !== 2"
+  >
+    <div class="column-header">
+      <h2 class="label">Specialist Agents</h2>
+    </div>
+    @if (sessionState.currentSession?.analyses?.length) {
+    <div class="agent-cards">
+      @for (analysis of sessionState.currentSession!.analyses; track
+      analysis.agentId) {
+      <app-agent-card
+        [analysis]="analysis"
+        [rebuttal]="getRebuttal(analysis.agentId)"
+      />
       }
     </div>
-
-    <div class="column col-4" [class.focused]="activeColumn === 3" [class.dimmed]="activeColumn > 0 && activeColumn !== 3">
-      <div class="column-header">
-        <h2 class="label">Judge & Verdict</h2>
-      </div>
-      <app-judge-panel />
+    } @else if (sessionState.currentSession?.status === 'AGENTS_ANALYZING') {
+    <div class="analyzing-state">
+      <p class="mono">Agents are analyzing...</p>
     </div>
+    } @else {
+    <div class="placeholder-content">
+      <p class="mono">Waiting for agent analysis</p>
+    </div>
+    }
   </div>
-  <app-pipeline-graph />
+
+  <div
+    class="column col-4"
+    [class.focused]="activeColumn === 3"
+    [class.dimmed]="activeColumn > 0 && activeColumn !== 3"
+  >
+    <div class="column-header">
+      <h2 class="label">Judge & Verdict</h2>
+    </div>
+    <app-judge-panel />
+  </div>
+</div>
+<app-pipeline-graph />
 }
 ```
 
@@ -1660,6 +1797,7 @@ Inspect the log; if everything looks good, the feature is ready for review or me
 ## Self-Review Checklist
 
 **Spec coverage** — every spec requirement maps to at least one task:
+
 - Capture prompts/responses/parsed output → Task 4
 - `llm_traces` table + `TraceRepository` → Task 2
 - `GET /sessions/:id/traces` → Task 6

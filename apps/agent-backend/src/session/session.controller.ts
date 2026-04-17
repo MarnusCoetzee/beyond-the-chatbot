@@ -1,11 +1,28 @@
-import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus, ConflictException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  ConflictException,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { PendingRunService } from './pending-run.service';
 import { TraceRepository } from './trace.repository';
 import { OrchestrationService } from '../orchestration/orchestration.service';
 import { v4 as uuidv4 } from 'uuid';
-import type { Session, CreateSessionResponse, SessionListItem, LlmTrace } from '@consensus-lab/shared-types';
+import type {
+  Session,
+  CreateSessionResponse,
+  SessionListItem,
+  LlmTrace,
+} from '@consensus-lab/shared-types';
 
 @Controller('sessions')
 export class SessionController {
@@ -63,7 +80,9 @@ export class SessionController {
     const session = this.sessionRepo.getById(id);
     if (!session) throw new NotFoundException(`Session ${id} not found`);
     if (['COMPLETE', 'ERROR', 'CANCELLED'].includes(session.status)) {
-      throw new ConflictException(`Session is already in terminal state: ${session.status}`);
+      throw new ConflictException(
+        `Session is already in terminal state: ${session.status}`,
+      );
     }
     this.orchestration.cancelSession(id);
     this.sessionRepo.updateStatus(id, 'CANCELLED');

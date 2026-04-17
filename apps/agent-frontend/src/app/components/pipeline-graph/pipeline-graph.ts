@@ -56,8 +56,14 @@ export class PipelineGraphComponent implements OnInit, OnDestroy {
   ];
 
   private readonly stageOrder: PipelineState[] = [
-    'IDLE', 'RESEARCHING', 'PACKET_READY', 'AGENTS_ANALYZING',
-    'JUDGE_REVIEWING', 'REBUTTAL_ROUND', 'FINAL_VERDICT', 'COMPLETE',
+    'IDLE',
+    'RESEARCHING',
+    'PACKET_READY',
+    'AGENTS_ANALYZING',
+    'JUDGE_REVIEWING',
+    'REBUTTAL_ROUND',
+    'FINAL_VERDICT',
+    'COMPLETE',
   ];
 
   private readonly nodeStageMap: Record<string, PipelineState> = {
@@ -104,7 +110,8 @@ export class PipelineGraphComponent implements OnInit, OnDestroy {
     const sourceClass = this.getNodeClass(edge.source);
     const targetClass = this.getNodeClass(edge.target);
     if (targetClass === 'active') return 'active-edge';
-    if (sourceClass === 'complete' && targetClass === 'complete') return 'complete-edge';
+    if (sourceClass === 'complete' && targetClass === 'complete')
+      return 'complete-edge';
     return '';
   }
 }

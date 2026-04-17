@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import OpenAI from 'openai';
 import { randomUUID } from 'crypto';
 import { LlmConfig, LlmTrace } from '@consensus-lab/shared-types';
@@ -14,7 +20,11 @@ export interface LlmRequest {
 
 export interface LlmResponse<T = string> {
   result: T;
-  usage?: { promptTokens: number; completionTokens: number; totalTokens: number };
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
 }
 
 export interface TraceContext {
@@ -38,7 +48,10 @@ export class LlmService {
     request: LlmRequest,
     trace?: TraceContext,
   ): Promise<LlmResponse<string>> {
-    const client = new OpenAI({ baseURL: config.baseUrl, apiKey: config.apiKey });
+    const client = new OpenAI({
+      baseURL: config.baseUrl,
+      apiKey: config.apiKey,
+    });
     const response = await client.chat.completions.create({
       model: config.model,
       messages: [
@@ -59,7 +72,9 @@ export class LlmService {
       : undefined;
 
     if (request.metadata) {
-      this.logger.log(`LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`);
+      this.logger.log(
+        `LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`,
+      );
     }
 
     this.persistTrace(trace, config, request, content, usage, undefined);
@@ -74,7 +89,10 @@ export class LlmService {
   ): Promise<LlmResponse<T>> {
     const systemWithJsonInstruction = `${request.system}\n\nYou MUST respond with valid JSON only. No markdown, no code fences, no explanation.`;
 
-    const client = new OpenAI({ baseURL: config.baseUrl, apiKey: config.apiKey });
+    const client = new OpenAI({
+      baseURL: config.baseUrl,
+      apiKey: config.apiKey,
+    });
     const response = await client.chat.completions.create({
       model: config.model,
       messages: [
@@ -95,10 +113,15 @@ export class LlmService {
       : undefined;
 
     if (request.metadata) {
-      this.logger.log(`LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`);
+      this.logger.log(
+        `LLM call [${request.metadata['stage'] ?? 'unknown'}]: ${usage?.totalTokens ?? '?'} tokens`,
+      );
     }
 
-    const cleaned = rawContent.replace(/```json?\n?/g, '').replace(/```\n?/g, '').trim();
+    const cleaned = rawContent
+      .replace(/```json?\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim();
     const parsed = JSON.parse(cleaned) as T;
 
     this.persistTrace(
@@ -118,7 +141,9 @@ export class LlmService {
     config: LlmConfig,
     request: { system: string; user: string },
     rawResponse: string,
-    usage: { promptTokens: number; completionTokens: number; totalTokens: number } | undefined,
+    usage:
+      | { promptTokens: number; completionTokens: number; totalTokens: number }
+      | undefined,
     parsedOutput: unknown,
   ): void {
     if (!trace || !this.traceRepo) return;

@@ -5,14 +5,14 @@
 
 ## Problem
 
-Consensus Lab runs a multi-agent deliberation pipeline, but once a session completes there is no way to inspect *how* each stage arrived at its output. Users see the final verdict and the agent cards, but they cannot:
+Consensus Lab runs a multi-agent deliberation pipeline, but once a session completes there is no way to inspect _how_ each stage arrived at its output. Users see the final verdict and the agent cards, but they cannot:
 
 - Walk back through the pipeline stage by stage
 - See exactly what prompt each LLM call received and what the model returned
 - Compare the raw LLM response against the structured data that was parsed out of it
 - Revisit a previous session's reasoning for a post-mortem or demo
 
-This feature adds a *session replay* capability: a timeline-based UI that lets a user step through a completed session and drill into the exact LLM traces behind each stage.
+This feature adds a _session replay_ capability: a timeline-based UI that lets a user step through a completed session and drill into the exact LLM traces behind each stage.
 
 ## Goals
 
@@ -55,20 +55,20 @@ The `LlmService` is the single point through which every LLM call flows. Trace c
 
 New SQLite table `llm_traces`:
 
-| Column             | Type    | Notes                                              |
-|--------------------|---------|----------------------------------------------------|
-| `id`               | TEXT PK | uuid                                               |
-| `sessionId`        | TEXT    | FK-equivalent to `sessions.id`; indexed            |
+| Column             | Type    | Notes                                                                                                                           |
+| ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `id`               | TEXT PK | uuid                                                                                                                            |
+| `sessionId`        | TEXT    | FK-equivalent to `sessions.id`; indexed                                                                                         |
 | `stage`            | TEXT    | e.g. `packet-building`, `agent-analysis`, `judge-review`, `agent-rebuttal`, `judge-verdict` (actor identity lives in `actorId`) |
-| `actorId`          | TEXT    | agentId when applicable, null otherwise            |
-| `systemPrompt`     | TEXT    | not null                                           |
-| `userPrompt`       | TEXT    | not null                                           |
-| `rawResponse`      | TEXT    | not null — the model's unparsed string output      |
-| `parsedOutput`     | TEXT    | JSON string of the parsed typed result, or null for plain-text completions |
-| `model`            | TEXT    | from `LlmConfig.model`                             |
-| `promptTokens`     | INTEGER | nullable                                           |
-| `completionTokens` | INTEGER | nullable                                           |
-| `createdAt`        | TEXT    | ISO timestamp; defines trace ordering              |
+| `actorId`          | TEXT    | agentId when applicable, null otherwise                                                                                         |
+| `systemPrompt`     | TEXT    | not null                                                                                                                        |
+| `userPrompt`       | TEXT    | not null                                                                                                                        |
+| `rawResponse`      | TEXT    | not null — the model's unparsed string output                                                                                   |
+| `parsedOutput`     | TEXT    | JSON string of the parsed typed result, or null for plain-text completions                                                      |
+| `model`            | TEXT    | from `LlmConfig.model`                                                                                                          |
+| `promptTokens`     | INTEGER | nullable                                                                                                                        |
+| `completionTokens` | INTEGER | nullable                                                                                                                        |
+| `createdAt`        | TEXT    | ISO timestamp; defines trace ordering                                                                                           |
 
 Indexed on `sessionId` for fast lookup.
 

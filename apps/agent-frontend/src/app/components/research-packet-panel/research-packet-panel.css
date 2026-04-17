@@ -7,7 +7,12 @@
 .shimmer-bar {
   height: 3px;
   border-radius: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-active), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-active),
+    transparent
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -23,7 +28,8 @@
   gap: var(--space-3);
 }
 
-.source-list, .claim-list {
+.source-list,
+.claim-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -60,6 +66,10 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }

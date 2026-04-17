@@ -11,8 +11,15 @@
     [layoutSettings]="{ orientation: 'LR', rankPadding: 60, nodePadding: 30 }"
   >
     <ng-template #defsTemplate>
-      <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0"
-        markerWidth="6" markerHeight="6" orient="auto">
+      <svg:marker
+        id="arrow"
+        viewBox="0 -5 10 10"
+        refX="8"
+        refY="0"
+        markerWidth="6"
+        markerHeight="6"
+        orient="auto"
+      >
         <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
       </svg:marker>
     </ng-template>
@@ -32,7 +39,9 @@
           text-anchor="middle"
           dominant-baseline="central"
           class="node-label"
-        >{{ node.label }}</svg:text>
+        >
+          {{ node.label }}
+        </svg:text>
       </svg:g>
     </ng-template>
 

@@ -14,6 +14,10 @@ import { ClaimCardComponent } from '../claim-card/claim-card';
 export class ResearchPacketPanelComponent {
   readonly sessionState = inject(SessionStateService);
 
-  get packet() { return this.sessionState.currentSession?.researchPacket; }
-  get isResearching() { return this.sessionState.currentSession?.status === 'RESEARCHING'; }
+  get packet() {
+    return this.sessionState.currentSession?.researchPacket;
+  }
+  get isResearching() {
+    return this.sessionState.currentSession?.status === 'RESEARCHING';
+  }
 }

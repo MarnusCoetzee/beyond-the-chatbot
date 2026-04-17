@@ -45,7 +45,8 @@
   color: var(--text-primary);
 }
 
-.loading, .empty {
+.loading,
+.empty {
   flex: 1;
   display: flex;
   align-items: center;
@@ -108,9 +109,15 @@
   flex-shrink: 0;
 }
 
-.status-dot.complete { background: var(--accent-success); }
-.status-dot.error { background: var(--accent-error); }
-.status-dot.active { background: var(--accent-active); }
+.status-dot.complete {
+  background: var(--accent-success);
+}
+.status-dot.error {
+  background: var(--accent-error);
+}
+.status-dot.active {
+  background: var(--accent-active);
+}
 
 .question-text {
   font-size: 13px;

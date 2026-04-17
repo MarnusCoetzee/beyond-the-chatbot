@@ -27,7 +27,8 @@ export class ReplayPageComponent implements OnInit {
 
     this.sessionService.get(id).subscribe({
       next: (session) => this.session.set(session),
-      error: (error: { message?: string }) => this.error.set(error.message ?? 'Failed to load session'),
+      error: (error: { message?: string }) =>
+        this.error.set(error.message ?? 'Failed to load session'),
     });
   }
 }

@@ -1,21 +1,21 @@
 <div class="pipeline-rail">
   @for (stage of stages; track stage.state) {
-    <div class="stage-step" [class]="getStageClass(stage.state)">
-      <div class="step-indicator">
-        @if (getStageClass(stage.state) === 'complete') {
-          <span class="check">✓</span>
-        } @else if (getStageClass(stage.state) === 'active') {
-          <span class="dot pulse"></span>
-        } @else {
-          <span class="dot"></span>
-        }
-      </div>
-      <div class="step-content">
-        <span class="step-label">{{ stage.label }}</span>
-        @if (getStageDuration(stage.state); as duration) {
-          <span class="step-duration mono">{{ duration }}</span>
-        }
-      </div>
+  <div class="stage-step" [class]="getStageClass(stage.state)">
+    <div class="step-indicator">
+      @if (getStageClass(stage.state) === 'complete') {
+      <span class="check">✓</span>
+      } @else if (getStageClass(stage.state) === 'active') {
+      <span class="dot pulse"></span>
+      } @else {
+      <span class="dot"></span>
+      }
     </div>
+    <div class="step-content">
+      <span class="step-label">{{ stage.label }}</span>
+      @if (getStageDuration(stage.state); as duration) {
+      <span class="step-duration mono">{{ duration }}</span>
+      }
+    </div>
+  </div>
   }
 </div>

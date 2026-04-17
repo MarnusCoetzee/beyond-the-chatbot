@@ -33,26 +33,30 @@ export class SessionRepository {
   }
 
   create(session: Session): void {
-    this.db.prepare('INSERT INTO sessions (id, data) VALUES (?, ?)').run(
-      session.id,
-      JSON.stringify(session),
-    );
+    this.db
+      .prepare('INSERT INTO sessions (id, data) VALUES (?, ?)')
+      .run(session.id, JSON.stringify(session));
   }
 
   getById(id: string): Session | undefined {
-    const row = this.db.prepare('SELECT data FROM sessions WHERE id = ?').get(id) as
-      | { data: string }
-      | undefined;
+    const row = this.db
+      .prepare('SELECT data FROM sessions WHERE id = ?')
+      .get(id) as { data: string } | undefined;
     return row ? (JSON.parse(row.data) as Session) : undefined;
   }
 
   list(): SessionListItem[] {
     const rows = this.db
-      .prepare('SELECT data FROM sessions ORDER BY json_extract(data, \'$.createdAt\') DESC')
+      .prepare(
+        "SELECT data FROM sessions ORDER BY json_extract(data, '$.createdAt') DESC",
+      )
       .all() as { data: string }[];
     return rows.map((row) => {
       const session = JSON.parse(row.data) as Session;
-      const totalDuration = session.stageMetadata.reduce((sum, m) => sum + (m.durationMs ?? 0), 0);
+      const totalDuration = session.stageMetadata.reduce(
+        (sum, m) => sum + (m.durationMs ?? 0),
+        0,
+      );
       return {
         id: session.id,
         question: session.question,
@@ -135,9 +139,8 @@ export class SessionRepository {
   }
 
   private save(session: Session): void {
-    this.db.prepare('UPDATE sessions SET data = ? WHERE id = ?').run(
-      JSON.stringify(session),
-      session.id,
-    );
+    this.db
+      .prepare('UPDATE sessions SET data = ? WHERE id = ?')
+      .run(JSON.stringify(session), session.id);
   }
 }

@@ -7,7 +7,12 @@ import { PacketBuilderService } from './packet-builder.service';
 
 @Module({
   imports: [forwardRef(() => LlmModule)],
-  providers: [ResearchService, SearchProviderService, ResearchExtractionService, PacketBuilderService],
+  providers: [
+    ResearchService,
+    SearchProviderService,
+    ResearchExtractionService,
+    PacketBuilderService,
+  ],
   exports: [ResearchService],
 })
 export class ResearchModule {}

@@ -14,7 +14,10 @@ export class SessionService {
   private readonly baseUrl = 'http://localhost:3000/api';
 
   create(request: CreateSessionRequest): Observable<CreateSessionResponse> {
-    return this.http.post<CreateSessionResponse>(`${this.baseUrl}/sessions`, request);
+    return this.http.post<CreateSessionResponse>(
+      `${this.baseUrl}/sessions`,
+      request,
+    );
   }
 
   list(): Observable<SessionListItem[]> {
@@ -26,6 +29,9 @@ export class SessionService {
   }
 
   cancel(id: string): Observable<{ status: string }> {
-    return this.http.post<{ status: string }>(`${this.baseUrl}/sessions/${id}/cancel`, {});
+    return this.http.post<{ status: string }>(
+      `${this.baseUrl}/sessions/${id}/cancel`,
+      {},
+    );
   }
 }

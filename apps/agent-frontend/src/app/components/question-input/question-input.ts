@@ -40,7 +40,8 @@ export class QuestionInputComponent {
 
     const llmConfig = this.settings.getLlmConfig();
     if (!llmConfig) {
-      this.error = 'Please configure your LLM settings first (click ⚙ in the top bar)';
+      this.error =
+        'Please configure your LLM settings first (click ⚙ in the top bar)';
       return;
     }
 

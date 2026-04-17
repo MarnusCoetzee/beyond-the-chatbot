@@ -28,8 +28,14 @@ export class PipelineStatusComponent {
   ];
 
   private readonly stageOrder: PipelineState[] = [
-    'IDLE', 'RESEARCHING', 'PACKET_READY', 'AGENTS_ANALYZING',
-    'JUDGE_REVIEWING', 'REBUTTAL_ROUND', 'FINAL_VERDICT', 'COMPLETE',
+    'IDLE',
+    'RESEARCHING',
+    'PACKET_READY',
+    'AGENTS_ANALYZING',
+    'JUDGE_REVIEWING',
+    'REBUTTAL_ROUND',
+    'FINAL_VERDICT',
+    'COMPLETE',
   ];
 
   getStageClass(stage: PipelineState): string {
@@ -39,14 +45,21 @@ export class PipelineStatusComponent {
     const currentIdx = this.stageOrder.indexOf(current);
     const stageIdx = this.stageOrder.indexOf(stage);
     if (currentIdx > stageIdx) return 'complete';
-    if (current === 'COMPLETE' || current === 'ERROR' || current === 'CANCELLED') {
-      if (stageIdx <= this.stageOrder.indexOf('FINAL_VERDICT')) return 'complete';
+    if (
+      current === 'COMPLETE' ||
+      current === 'ERROR' ||
+      current === 'CANCELLED'
+    ) {
+      if (stageIdx <= this.stageOrder.indexOf('FINAL_VERDICT'))
+        return 'complete';
     }
     return 'pending';
   }
 
   getStageDuration(stage: PipelineState): string | null {
-    const metadata = this.sessionState.currentSession?.stageMetadata.find(m => m.stage === stage);
+    const metadata = this.sessionState.currentSession?.stageMetadata.find(
+      (m) => m.stage === stage,
+    );
     if (!metadata?.durationMs) return null;
     return `${(metadata.durationMs / 1000).toFixed(1)}s`;
   }
