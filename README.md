@@ -166,7 +166,7 @@ These roles all consume the same research packet, which makes the demo more grou
 - standalone components
 - RxJS
 - Angular router
-- ngx-graph for decision visualization
+- custom live pipeline visualization
 
 ### Backend
 

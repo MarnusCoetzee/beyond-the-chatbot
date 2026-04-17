@@ -19,8 +19,7 @@
             "input": "apps/agent-frontend/public"
           }
         ],
-        "styles": ["apps/agent-frontend/src/styles.css"],
-        "allowedCommonJsDependencies": ["dagre", "webcola"]
+        "styles": ["apps/agent-frontend/src/styles.css"]
       },
       "configurations": {
         "production": {

@@ -1,58 +1,62 @@
 <div class="graph-container glass-panel">
   <div class="graph-header">
     <h3 class="label">Pipeline Flow</h3>
+    <p class="graph-caption">Question → evidence → deliberation → verdict</p>
   </div>
-  <ngx-graph
-    [nodes]="nodes"
-    [links]="links"
-    [autoZoom]="true"
-    [autoCenter]="true"
-    layout="dagre"
-    [layoutSettings]="{ orientation: 'LR', rankPadding: 60, nodePadding: 30 }"
-  >
-    <ng-template #defsTemplate>
-      <svg:marker
-        id="arrow"
-        viewBox="0 -5 10 10"
-        refX="8"
-        refY="0"
-        markerWidth="6"
-        markerHeight="6"
-        orient="auto"
+
+  <div class="pipeline-map">
+    <div class="flow-row">
+      <div class="flow-node" [ngClass]="getNodeClass('question')">Question</div>
+      <div
+        class="flow-arrow"
+        [ngClass]="getConnectorClass('question', 'research')"
       >
-        <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-      </svg:marker>
-    </ng-template>
+        →
+      </div>
+      <div class="flow-node" [ngClass]="getNodeClass('research')">Research</div>
+      <div
+        class="flow-arrow"
+        [ngClass]="getConnectorClass('research', 'packet')"
+      >
+        →
+      </div>
+      <div class="flow-node" [ngClass]="getNodeClass('packet')">Packet</div>
+    </div>
 
-    <ng-template #nodeTemplate let-node>
-      <svg:g [attr.class]="'node-group ' + getNodeClass(node.id)">
-        <svg:rect
-          [attr.width]="node.dimension?.width"
-          [attr.height]="node.dimension?.height"
-          rx="12"
-          ry="12"
-          class="node-rect"
-        />
-        <svg:text
-          [attr.x]="(node.dimension?.width || 0) / 2"
-          [attr.y]="(node.dimension?.height || 0) / 2"
-          text-anchor="middle"
-          dominant-baseline="central"
-          class="node-label"
-        >
-          {{ node.label }}
-        </svg:text>
-      </svg:g>
-    </ng-template>
+    <div class="branch-block">
+      <div class="branch-label">Specialist panel</div>
+      <div class="agent-row">
+        <div class="flow-node agent" [ngClass]="getNodeClass('pragmatist')">
+          Pragmatist
+        </div>
+        <div class="flow-node agent" [ngClass]="getNodeClass('performance')">
+          Performance
+        </div>
+        <div class="flow-node agent" [ngClass]="getNodeClass('dx')">
+          DX Advocate
+        </div>
+        <div class="flow-node agent" [ngClass]="getNodeClass('skeptic')">
+          Skeptic
+        </div>
+      </div>
+    </div>
 
-    <ng-template #linkTemplate let-link>
-      <svg:g [attr.class]="getEdgeClass(link)">
-        <svg:path
-          [attr.d]="link.line"
-          class="edge-line"
-          marker-end="url(#arrow)"
-        />
-      </svg:g>
-    </ng-template>
-  </ngx-graph>
+    <div class="flow-row verdict-row">
+      <div class="flow-node" [ngClass]="getNodeClass('judge')">Judge</div>
+      <div
+        class="flow-arrow"
+        [ngClass]="getConnectorClass('judge', 'rebuttal')"
+      >
+        →
+      </div>
+      <div class="flow-node" [ngClass]="getNodeClass('rebuttal')">Rebuttal</div>
+      <div
+        class="flow-arrow"
+        [ngClass]="getConnectorClass('rebuttal', 'verdict')"
+      >
+        →
+      </div>
+      <div class="flow-node" [ngClass]="getNodeClass('verdict')">Verdict</div>
+    </div>
+  </div>
 </div>
